@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="//cloud.tinymce.com/stable/tinymce.min.js?apiKey=6eedbv2kx9vn8ef67rkl7uzozqpenm1m76tzu14avz0exrl1"></script>
+    <script>tinymce.init({ selector:'textarea' });</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation.css" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>{% block title %}{% endblock %} - FALC</title>
+    {% endblock %}
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-title">
+            FALC Converter
+        </div>
+    </div>
+
+    <div id="content">{% block content %}{% endblock %}</div>
+    <footer class="footer">
+        <div class="row full-width">
+            <p>&copy; Copyright 2017 by <a href="https://www.fstlab.ch/site/">FSTLab</a>.</p>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="medium-4 columns">
+                Design
+            </div>
+            <div class="medium-4 columns">
+                is so
+            </div>
+            <div class="medium-4 columns">
+                2017
+            </div>
+        </div>
+    </div>
+</body>
+</html>

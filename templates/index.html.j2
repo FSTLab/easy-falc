@@ -1,0 +1,115 @@
+{% extends "base.html.j2" %}
+
+{% block title %}Index{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var tiny_ifr = $('#myta_ifr');
+
+            tiny_ifr.contents().find("[id^=warning-]").mouseenter(function(){
+                var index = parseInt($(this).attr("id").replace('warning-',''), 10);
+                highlight(index, true);
+            });
+
+            tiny_ifr.contents().find("[id^=warning-]").mouseleave(function(){
+                var index = parseInt($(this).attr("id").replace('warning-',''), 10);
+                highlight(index, false);
+            });
+
+            $("[id^=warning-]").mouseenter(function(){
+                var index = parseInt($(this).attr("id").replace('warning-',''), 10);
+                console.log("enters");
+                highlight(index, true);
+            });
+
+            $("[id^=warning-]").mouseleave(function(){
+                var index = parseInt($(this).attr("id").replace('warning-',''), 10);
+                console.log("leaves");
+                highlight(index, false);
+            });
+
+            function highlight(index, enters){
+                var tiny_ifr = $('#myta_ifr');
+                var a = tiny_ifr.contents().find("[id=warning-" + index + "]");
+                var b = $("[id=warning-" + index + "]");
+                var color = enters ? "#ff8673" : "#f7e4e1";
+                a.css("background-color", color);
+                b.css("background-color", color);
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <form action="/" id="myform" method="post">
+        <div class="row">
+            <h1> </h1>
+        </div>
+
+        <div class="row">
+            <div class="medium-8 columns">
+                <div class="row">
+                    <textarea id="myta" class="main-text" name="text" form="myform">
+                        {% for t in text -%}
+                        {% set outer_loop = loop -%}
+                            {% for warning in warnings -%}
+                                {% if outer_loop.index0 == warning.start %}
+                                    <span id="warning-{{ warning.id }}" style="background-color: #f7e4e1;padding: 5px;">
+                                {% endif %}
+                            {%- endfor -%}
+                            {{ t }}
+                            {%- for warning in warnings -%}
+                                {% if outer_loop.index0 == warning.end - 1 %}
+                                    </span>
+                                {% endif %}
+                            {%- endfor %}
+                        {%- endfor %}
+                    </textarea>
+                </div>
+                <div class="row">
+                    <input type="submit" class="button">
+                </div>
+            </div>
+            <div class="medium-4 columns">
+                {% if warnings %}
+                    {% for warning in warnings %}
+                        <div class="callout alert" id="warning-{{ warning.id }}">
+                            <p>{{ warning.comment }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="callout success">
+                        <p>Aucun problème rencontré</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+    <!--  <\/*span[\w"=\-:; ]*>  -->
+
+    {% if lexems %}
+        <!-- <p>
+        {% for lex in lexems %}
+            <code class="{{ lex.type }}">{{ lex.content }}</code>
+        {% endfor %}
+        </p> -->
+
+        <!-- <div class="callout primary">
+            <p>
+                {% for t in text -%}
+                {% set outer_loop = loop -%}
+                    {% for warning in warnings if outer_loop.index - 1 == warning[0] -%}
+                        <span class="text-warning">
+                    {%- endfor -%}
+                    {{ t }}
+                    {%- for warning in warnings if loop.index == warning[1] -%}
+                        </span>
+                    {%- endfor %}
+                {%- endfor %}
+            </p>
+        </div> -->
+    {% endif %}
+{% endblock %}
