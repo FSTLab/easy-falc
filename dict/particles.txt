@@ -7,3 +7,6 @@ word
 [;:\(\)\[\]\*]
 caractère à éviter, utiliser une ponctuation simple
 punc
+[A-Z][A-Z.]{2,}
+limiter l'usage des sigles et acronymes, plusieurs lettre de suite en majuscule
+punc

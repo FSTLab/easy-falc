@@ -51,6 +51,7 @@ R_WORDS = u'[a-zàâçéèêëîïôûùüÿñæœ\-]+\'*(?i)'
 # REGEX_PUNC = u'[.,\/#!$%\^&\*;:{}=\-_`~()?\']'
 # R_WORDS = ur'[^\\p{Z}]*\\p{L}[^\\p{Z}]*'
 R_SPAN = u'(<\/*span[^>]*>|<\/*p>)'
+R_SENTENCE = u'[^.?!]+'
 
 particles = []
 with codecs.open('dict/particles.txt', encoding='utf8') as f:
@@ -89,6 +90,13 @@ def process(text):
     """Do the things."""
     words = []
     warnings = []
+
+    # Check sentence length
+    # for m in re.compile(R_SENTENCE).finditer(text):
+    #     if len(m.group().split(' ')) > 12:
+    #         s = m.start()
+    #         end = s + len(m.group())
+    #         warnings.append((len(warnings), s, end, "too many wordz", m.group()))
 
     # Check punctutation that should be avoided
     for particle in particles:
