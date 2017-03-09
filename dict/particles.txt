@@ -1,0 +1,9 @@
+n[\'e]
+utilise une formulation négative, privilégier plutôt la forme affirmative
+word
+.{8,}
+Choisir des mots courts
+word
+[;:\(\)\[\]\*]
+caractère à éviter, utiliser une ponctuation simple
+punc

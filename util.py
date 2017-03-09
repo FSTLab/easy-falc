@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
 """Util methods for FALC."""
 import re
+import codecs
 
 
 ###############################################################################
 #                                 Classes                                     #
 ###############################################################################
+class Word:
+    """Defines a word."""
+
+    def __init__(self, text, position):
+        """Word inits."""
+        self.text = text
+        self.position = position
+
+
 class Particle:
     """
     Describes particle you should avoir and its mitigation.
@@ -42,19 +52,15 @@ R_WORDS = u'[a-zàâçéèêëîïôûùüÿñæœ\-]+\'*(?i)'
 # R_WORDS = ur'[^\\p{Z}]*\\p{L}[^\\p{Z}]*'
 R_SPAN = u'(<\/*span[^>]*>|<\/*p>)'
 
-particles = [
-    Particle(
-        u'n[\'e]',
-        u"utilise une formulation négative, privilégier plutôt la forme\
-            affirmative",
-        Particle.TYPE_WORD
-    ),
-    Particle(
-        u':',
-        u"caractère à éviter, utiliser une ponctuation simple",
-        Particle.TYPE_PUNC
-    )
-]
+particles = []
+with codecs.open('dict/particles.txt', encoding='utf8') as f:
+    lines = f.read().splitlines()
+    for i in range(0, len(lines), 3):
+        regex = lines[i]
+        comment = lines[i + 1]
+        type = lines[i + 2]
+        particle = Particle(regex, comment, type)
+        particles.append(particle)
 
 
 def clean(text):
@@ -72,14 +78,14 @@ def add_warning(warnings, m, particle, offset=0):
     :param offset:      Offset, if you are not looping through the whole text.
     """
     index = len(warnings)
-    start = m.start() + offset - 1
+    start = m.start() + offset
     snippet = m.group()
-    end = start + len(snippet)
+    end = start + len(snippet) - 1
     comment = particle.comment
     warnings.append(Warning(index, start, end, comment, snippet))
 
 
-def lexems(text):
+def process(text):
     """Do the things."""
     words = []
     warnings = []
@@ -100,7 +106,6 @@ def lexems(text):
             if particle.type == Particle.TYPE_WORD:
                 r = '^' + particle.regex + '$'
                 for m in re.compile(r).finditer(word[0]):
-                    print(m.group())
                     add_warning(warnings, m, particle, word[1])
 
     return words, warnings

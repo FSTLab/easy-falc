@@ -5,6 +5,7 @@ from flask import Flask
 from flask import request
 from flask import render_template
 import util
+from lxml import html
 app = Flask(__name__)
 
 app.jinja_env.trim_blocks = True
@@ -57,11 +58,15 @@ def index():
     #     print dictionnary['code'], ' is ', dictionnary['libelle']
     text = ""
     try:
-        text = util.clean(request.form['text'])
+        t = request.form['text']
+        text = html.fromstring(t).text_content()
+        # text = util.clean(request.form['text'])
     except KeyError:
         print "No text received"
 
-    words, warnings = util.lexems(text)
+    print(text)
+
+    words, warnings = util.process(text)
 
     # NOT a good way to do it. too slow.
     # words = []
