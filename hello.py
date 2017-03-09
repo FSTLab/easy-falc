@@ -61,7 +61,7 @@ def index():
     except KeyError:
         print "No text received"
 
-    lexems, warnings = util.lexems(text)
+    words, warnings = util.lexems(text)
 
     # NOT a good way to do it. too slow.
     # words = []
@@ -71,5 +71,4 @@ def index():
     #     if w is not None:
     #         words.append((word, w['ponderation']))
 
-    return render_template('index.html.j2', text=text, lexems=lexems,
-                           warnings=warnings)
+    return render_template('index.html.j2', text=text, warnings=warnings)

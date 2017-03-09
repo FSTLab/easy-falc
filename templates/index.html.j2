@@ -34,9 +34,13 @@
                 var tiny_ifr = $('#myta_ifr');
                 var a = tiny_ifr.contents().find("[id=warning-" + index + "]");
                 var b = $("[id=warning-" + index + "]");
-                var color = enters ? "#ff8673" : "#f7e4e1";
-                a.css("background-color", color);
-                b.css("background-color", color);
+                if(enters){
+                    a.css("background-color", "#ff8673");
+                    b.removeClass("hide");
+                }else{
+                    a.css("background-color", "#f7e4e1");
+                    b.addClass("hide");
+                }
             }
         });
     </script>
@@ -56,12 +60,12 @@
                         {% set outer_loop = loop -%}
                             {% for warning in warnings -%}
                                 {% if outer_loop.index0 == warning.start %}
-                                    <span id="warning-{{ warning.id }}" style="background-color: #f7e4e1;padding: 5px;">
+                                    <span id="warning-{{ warning.index }}" style="background-color: #f7e4e1;padding: 5px;">
                                 {% endif %}
                             {%- endfor -%}
                             {{ t }}
                             {%- for warning in warnings -%}
-                                {% if outer_loop.index0 == warning.end - 1 %}
+                                {% if outer_loop.index0 == warning.end -%}
                                     </span>
                                 {% endif %}
                             {%- endfor %}
@@ -74,9 +78,14 @@
             </div>
             <div class="medium-4 columns">
                 {% if warnings %}
+                    <div class="callout">
+                        <h5>Errors summary</h5>
+                        <span class="badge alert">{{ warnings|length }}</span> errors.
+                    </div>
                     {% for warning in warnings %}
-                        <div class="callout alert" id="warning-{{ warning.id }}">
+                        <div class="callout alert hide" id="warning-{{ warning.index }}">
                             <p>{{ warning.comment }}</p>
+                            <p><i>{{ warning.snippet }} ({{ warning.start }}:{{warning.end}})</i></p>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -87,29 +96,4 @@
             </div>
         </div>
     </form>
-
-    <!--  <\/*span[\w"=\-:; ]*>  -->
-
-    {% if lexems %}
-        <!-- <p>
-        {% for lex in lexems %}
-            <code class="{{ lex.type }}">{{ lex.content }}</code>
-        {% endfor %}
-        </p> -->
-
-        <!-- <div class="callout primary">
-            <p>
-                {% for t in text -%}
-                {% set outer_loop = loop -%}
-                    {% for warning in warnings if outer_loop.index - 1 == warning[0] -%}
-                        <span class="text-warning">
-                    {%- endfor -%}
-                    {{ t }}
-                    {%- for warning in warnings if loop.index == warning[1] -%}
-                        </span>
-                    {%- endfor %}
-                {%- endfor %}
-            </p>
-        </div> -->
-    {% endif %}
 {% endblock %}
