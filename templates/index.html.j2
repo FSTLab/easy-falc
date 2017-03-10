@@ -35,10 +35,10 @@
                 var a = tiny_ifr.contents().find("[id=warning-" + index + "]");
                 var b = $("[id=warning-" + index + "]");
                 if(enters){
-                    a.css("background-color", "#ff8673");
+                    a.css("background-color", "#fdca40");
                     b.removeClass("hide");
                 }else{
-                    a.css("background-color", "#f7e4e1");
+                    a.css("background-color", "#ffe18f");
                     b.addClass("hide");
                 }
             }
@@ -47,6 +47,19 @@
 {% endblock %}
 
 {% block content %}
+    <div class="row">
+        <div class="medium-7 large-6 columns">
+            <h1>Rédigez facilement</h1>
+            <p class="subheader">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <button class="button">Take a Tour</button>
+            <button class="button highlight">Start a free trial</button>
+        </div>
+        <div class="show-for-large large-3 columns">
+            <img src="/static/logo.png" alt="picture of space">
+        </div>
+    </div>
+
+
     <form action="/" id="myform" method="post">
         <div class="row">
             <h1> </h1>
@@ -60,7 +73,7 @@
                         {% set outer_loop = loop -%}
                             {% for warning in warnings -%}
                                 {% if outer_loop.index0 == warning.start %}
-                                    <span id="warning-{{ warning.index }}" style="background-color: #f7e4e1;">
+                                    <span id="warning-{{ warning.index }}" style="background-color: #ffe18f;">
                                 {% endif %}
                             {%- endfor -%}
                             {{ t }}
@@ -72,6 +85,7 @@
                         {%- endfor %}
                     </textarea>
                 </div>
+                <br>
                 <div class="row">
                     <input type="submit" class="button">
                 </div>
@@ -85,7 +99,7 @@
                     {% for warning in warnings %}
                         <div class="callout alert hide" id="warning-{{ warning.index }}">
                             <p>{{ warning.comment }}</p>
-                            <p><i>{{ warning.snippet }} ({{ warning.start }}:{{warning.end}})</i></p>
+                            <p class="warning-snippet"><i>{{ warning.snippet }}</i></p>
                         </div>
                     {% endfor %}
                 {% else %}

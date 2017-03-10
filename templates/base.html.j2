@@ -12,28 +12,71 @@
 </head>
 <body>
     <div class="top-bar">
-        <div class="top-bar-title">
-            FALC Converter
+        <div class="top-bar-left">
+            <ul class="dropdown menu" data-dropdown-menu>
+                <li class="menu-text">FALC Helper</li>
+                <li><a href="#">What's FALC ?</a></li>
+                <li><a href="#">Pricing</a></li>
+                <li><a href="#">About us</a></li>
+            </ul>
+        </div>
+        <div class="top-bar-right">
+            <ul class="menu">
+                <li><input type="search" placeholder="Search"></li>
+                <li><button type="button" class="button">Search</button></li>
+            </ul>
         </div>
     </div>
 
+    <br>
+
     <div id="content">{% block content %}{% endblock %}</div>
-    <footer class="footer">
-        <div class="row full-width">
-            <p>&copy; Copyright 2017 by <a href="https://www.fstlab.ch/site/">FSTLab</a>.</p>
+
+    <footer>
+        <div class="row expanded callout footer">
+            <div class="small-12 large-4 columns">
+                <p class="lead">FALC</p>
+                <ul class="menu vertical">
+                    <li><a href="#">One</a></li>
+                    <li><a href="#">Two</a></li>
+                    <li><a href="#">Three</a></li>
+                    <li><a href="#">Four</a></li>
+                </ul>
+            </div>
+            <div class="small-12 large-4 columns">
+                <p class="lead">Exemple</p>
+                <ul class="menu vertical">
+                    <li><a href="#">One</a></li>
+                    <li><a href="#">Two</a></li>
+                    <li><a href="#">Three</a></li>
+                    <li><a href="#">Four</a></li>
+                </ul>
+            </div>
+            <div class="small-12 large-4 columns">
+                <p class="lead">FSTLab.</p>
+                <ul class="menu vertical">
+                    <li><a href="#"><i class="fi-social-twitter"></i> Twitter</a></li>
+                    <li><a href="#"><i class="fi-social-facebook"></i> Facebook</a></li>
+                    <li><a href="#"><i class="fi-social-instagram"></i> Instagram</a></li>
+                    <li><a href="#"><i class="fi-social-pinterest"></i> Pinterest</a></li>
+                </ul>
+            </div>
         </div>
-        <hr>
         <div class="row">
-            <div class="medium-4 columns">
-                Temp
+            <div class="medium-6 columns">
+                <ul class="menu">
+                    <li><a href="#">Legal</a></li>
+                    <li><a href="#">Partner</a></li>
+                    <li><a href="#">Explore</a></li>
+                </ul>
             </div>
-            <div class="medium-4 columns">
-                Temp
-            </div>
-            <div class="medium-4 columns">
-                Temp
+            <div class="medium-6 columns">
+                <ul class="menu float-right">
+                    <li class="menu-text">&copy; Copyright 2017 by <a href="https://www.fstlab.ch/site/">FSTLab</a>.</li>
+                </ul>
             </div>
         </div>
-    </div>
+    </footer>
+
 </body>
 </html>

@@ -1,14 +1,50 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 
+/*
+#31393c     dark
+#c0e2ff     light blue (whitish)
+#33a1fd     bright blue
+#0081ff     blue
+#ffe18f     light orange (whitish)
+#fdca40     bright orange
+#f79824     orange
+*/
+
 body{
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;
+    color: #1779ba;
 }
 
-.footer{
-    padding: 2rem 4rem;
-    color: #dedede;
-    background-color: #43475f;
+.top-bar, .top-bar ul {
+    background-color: #31393c;
+}
+
+.button.highlight{
+    background-color: #f79824;
+}
+
+.callout.success{
+    background-color: #c0e2ff;
+}
+
+.callout.alert{
+    background-color: #ffe18f;
+    border-color: #fdca40;
+}
+
+.callout.footer{
+    color: #fdca40;
+    background-color: #31393c;
+}
+
+.badge.alert{
+    background: #f79824;
+}
+
+.warning-snippet{
+    background-color: #fdca40;
+    padding: 5px;
 }
 
 textarea.main-text {
