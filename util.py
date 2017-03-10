@@ -54,7 +54,7 @@ R_SPAN = u'(<\/*span[^>]*>|<\/*p>)'
 R_SENTENCE = u'[^.?!]+'
 
 particles = []
-with codecs.open('dict/particles.txt', encoding='utf8') as f:
+with codecs.open('./dict/particles.txt', encoding='utf8') as f:
     lines = f.read().splitlines()
     for i in range(0, len(lines), 3):
         regex = lines[i]
@@ -92,11 +92,13 @@ def process(text):
     warnings = []
 
     # Check sentence length
-    # for m in re.compile(R_SENTENCE).finditer(text):
-    #     if len(m.group().split(' ')) > 12:
-    #         s = m.start()
-    #         end = s + len(m.group())
-    #         warnings.append((len(warnings), s, end, "too many wordz", m.group()))
+    for m in re.compile(R_SENTENCE).finditer(text):
+        if len(m.group().split(' ')) > 12:
+            index = len(warnings)
+            start = m.start()
+            snippet = m.group()
+            end = start + len(snippet) - 1
+            warnings.append(Warning(index, start, end, comment, snippet))
 
     # Check punctutation that should be avoided
     for particle in particles:

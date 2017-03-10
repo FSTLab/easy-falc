@@ -68,12 +68,11 @@ def index():
 
     words, warnings = util.process(text)
 
-    # NOT a good way to do it. too slow.
-    # words = []
-    # for word in text.split(' '):
-    #     w = query_db('select * from Mots where mot = ?',
-    #                  [word.lower()], one=True)
-    #     if w is not None:
-    #         words.append((word, w['ponderation']))
+    im = ','.join(['?'] * len(words))
+    query = 'select * from Mots where mot in ({})'.format(im)
+    mots = query_db(query, [word[0].lower() for word in words], one=True)
+    for mot in mots:
+        if mot['ponderation'] < 10:
+            print(mot['mot'])
 
     return render_template('index.html.j2', text=text, warnings=warnings)
