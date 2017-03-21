@@ -1,0 +1,30 @@
+@import 'variables';
+
+#banner {
+	border-bottom: 1px solid darken($background, 10%);
+	background-color: $color-grey;
+	color: $color-grey-light;
+	height: 400px;
+	overflow: hidden;
+
+	button {
+		margin-top: 30px;
+	}
+
+	.row {
+		background-image: url('../img/bg.png');
+		background-repeat: no-repeat;
+		background-position: right;
+		height: 400px;
+	}
+
+	#banner_text {
+		max-width: 500px;
+		padding: 4rem;
+		position: absolute;
+	}
+}
+
+#myform {
+	padding-bottom: 2rem;
+}

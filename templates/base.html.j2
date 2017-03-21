@@ -1,40 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% block head %}
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <script src="//cloud.tinymce.com/stable/tinymce.min.js?apiKey=6eedbv2kx9vn8ef67rkl7uzozqpenm1m76tzu14avz0exrl1"></script>
-    <script>tinymce.init({ selector:'textarea' });</script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation.css" />
-    <link rel="stylesheet" href="static/style.css" />
-    <title>{% block title %}{% endblock %} - FALC</title>
-    {% endblock %}
+
+	<link rel="icon" type="image/png" href="static/favicon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation.min.css" />
+	<link rel="stylesheet" href="static/font/foundation-icons.css" />
+    <link rel="stylesheet" href="static/css/style.min.css" />
+	{% if css %}
+    <link rel="stylesheet" href="static/css/{{ css }}.min.css" />
+    {% endif %}
+
+    <title>FALC | {% block title %}{% endblock %}</title>
+
 </head>
 <body>
-    <div class="top-bar">
-        <div class="top-bar-left">
-            <ul class="dropdown menu" data-dropdown-menu>
-                <li class="menu-text">FALC Helper</li>
+	<div class="title-bar" data-responsive-toggle="top-bar" data-hide-for="medium">
+		<button class="menu-icon" type="button" data-toggle></button>
+		<div class="title-bar-title">Menu</div>
+	</div>
+
+    <div class="top-bar" id="top-bar">
+		<div id="top-bar-content">
+			<div class="top-bar-title hide-for-small-only"><img src="static/favicon.png" alt="FALC" />FALC</div>
+            <ul class="dropdown menu" data-responsive-menu="accordion">
                 <li><a href="#">What's FALC ?</a></li>
                 <li><a href="#">Pricing</a></li>
                 <li><a href="#">About us</a></li>
             </ul>
-        </div>
-        <div class="top-bar-right">
-            <ul class="menu">
-                <li><input type="search" placeholder="Search"></li>
-                <li><button type="button" class="button">Search</button></li>
-            </ul>
-        </div>
+		</div>
     </div>
 
-    <br>
+	<div class="arrow"></div>
 
     <div id="content">{% block content %}{% endblock %}</div>
 
+	<div class="arrow"></div>
+
     <footer>
-        <div class="row expanded callout footer">
-            <div class="small-12 large-4 columns">
+        <div class="row plan">
+			<div class="small-3 large-3 columns">
+				<img src="static/img/footer.png" alt="EasyFLAC" />
+            </div>
+            <div class="small-3 large-3 columns">
                 <p class="lead">FALC</p>
                 <ul class="menu vertical">
                     <li><a href="#">One</a></li>
@@ -43,7 +50,7 @@
                     <li><a href="#">Four</a></li>
                 </ul>
             </div>
-            <div class="small-12 large-4 columns">
+            <div class="small-3 large-3 columns">
                 <p class="lead">Exemple</p>
                 <ul class="menu vertical">
                     <li><a href="#">One</a></li>
@@ -52,8 +59,8 @@
                     <li><a href="#">Four</a></li>
                 </ul>
             </div>
-            <div class="small-12 large-4 columns">
-                <p class="lead">FSTLab.</p>
+            <div class="small-3 large-3 columns">
+                <p class="lead">FSTLab</p>
                 <ul class="menu vertical">
                     <li><a href="#"><i class="fi-social-twitter"></i> Twitter</a></li>
                     <li><a href="#"><i class="fi-social-facebook"></i> Facebook</a></li>
@@ -62,21 +69,30 @@
                 </ul>
             </div>
         </div>
-        <div class="row">
-            <div class="medium-6 columns">
-                <ul class="menu">
-                    <li><a href="#">Legal</a></li>
-                    <li><a href="#">Partner</a></li>
-                    <li><a href="#">Explore</a></li>
-                </ul>
+        <div class="row footer">
+            <div>
+                <a href="#">Legal</a> |
+				<a href="#">Partner</a> |
+				<a href="#">Explore</a>
             </div>
-            <div class="medium-6 columns">
-                <ul class="menu float-right">
-                    <li class="menu-text">&copy; Copyright 2017 by <a href="https://www.fstlab.ch/site/">FSTLab</a>.</li>
-                </ul>
+            <div>
+                &copy; Copyright 2017 by <a href="https://www.fstlab.ch/site/">FSTLab</a>
             </div>
         </div>
     </footer>
 
+	<script src="https://code.jquery.com/jquery-3.2.0.min.js" integrity="sha256-JAW99MJVpJBGcbzEuXk4Az05s/XyDdBomFqNlM3ic+I=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/js/foundation.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/js/plugins/foundation.responsiveMenu.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/js/plugins/foundation.util.mediaQuery.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/js/plugins/foundation.util.triggers.js"></script>
+	<script src="//cloud.tinymce.com/stable/tinymce.min.js?apiKey=6eedbv2kx9vn8ef67rkl7uzozqpenm1m76tzu14avz0exrl1"></script>
+	<script src="static/js/app.js"></script>
+	{% if js %}
+    <script src="static/js/{{ js }}.js"></script>
+    {% endif %}
+
+	{% block head %}
+	{% endblock %}
 </body>
 </html>

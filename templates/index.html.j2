@@ -1,64 +1,20 @@
 {% extends "base.html.j2" %}
+{'css' : 'index'}
+{'js' : 'index'}
 
 {% block title %}Index{% endblock %}
 
-{% block head %}
-    {{ super() }}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            var tiny_ifr = $('#myta_ifr');
-
-            tiny_ifr.contents().find("[id^=warning-]").mouseenter(function(){
-                var index = parseInt($(this).attr("id").replace('warning-',''), 10);
-                highlight(index, true);
-            });
-
-            tiny_ifr.contents().find("[id^=warning-]").mouseleave(function(){
-                var index = parseInt($(this).attr("id").replace('warning-',''), 10);
-                highlight(index, false);
-            });
-
-            $("[id^=warning-]").mouseenter(function(){
-                var index = parseInt($(this).attr("id").replace('warning-',''), 10);
-                console.log("enters");
-                highlight(index, true);
-            });
-
-            $("[id^=warning-]").mouseleave(function(){
-                var index = parseInt($(this).attr("id").replace('warning-',''), 10);
-                console.log("leaves");
-                highlight(index, false);
-            });
-
-            function highlight(index, enters){
-                var tiny_ifr = $('#myta_ifr');
-                var a = tiny_ifr.contents().find("[id=warning-" + index + "]");
-                var b = $("[id=warning-" + index + "]");
-                if(enters){
-                    a.css("background-color", "#fdca40");
-                    b.removeClass("hide");
-                }else{
-                    a.css("background-color", "#ffe18f");
-                    b.addClass("hide");
-                }
-            }
-        });
-    </script>
-{% endblock %}
-
 {% block content %}
-    <div class="row">
-        <div class="medium-7 large-6 columns">
-            <h1>Rédigez facilement</h1>
-            <p class="subheader">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            <button class="button">Take a Tour</button>
-            <button class="button highlight">Start a free trial</button>
-        </div>
-        <div class="show-for-large large-3 columns">
-            <img src="/static/logo.png" alt="picture of space">
-        </div>
-    </div>
-
+	<div id="banner">
+	    <div class="row">
+	        <div id="banner_text" class="medium-7 large-6 columns">
+	            <h1>Rédigez facilement</h1>
+	            <p class="subheader">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+	            <button class="button">Take a Tour</button>
+	            <button class="button highlight">Start a free trial</button>
+	        </div>
+	    </div>
+	</div>
 
     <form action="/" id="myform" method="post">
         <div class="row">

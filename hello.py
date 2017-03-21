@@ -82,4 +82,18 @@ def index():
     #             comment = "Utilisez des mots plus courants."
     #             warnings.append(Warning(index, start, end, comment, snippet))
 
-    return render_template('index.html.j2', text=text, warnings=warnings)
+    return render_template('index.html.j2', text=text, warnings=warnings, css='index', js='index')
+
+@app.route('/action', methods=['POST', 'GET'])
+def action():
+    text = ""
+    try:
+		t = request.form['text']
+		print(t)
+		text = html.fromstring(t).text_content()
+        # text = util.clean(request.form['text'])
+    except KeyError:
+        print "No text received"
+
+	words, warnings = util.process(text)
+	return [words, warnings]
