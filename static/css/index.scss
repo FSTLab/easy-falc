@@ -19,9 +19,14 @@
 	}
 
 	#banner_text {
-		max-width: 500px;
+		color: $color-grey-light;
+		max-width: 600px;
 		padding: 4rem;
 		position: absolute;
+
+		.subheader {
+			color: $color-grey-light;
+		}
 	}
 
 	img {
