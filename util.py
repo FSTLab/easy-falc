@@ -8,20 +8,21 @@ import codecs
 #                                 Classes                                     #
 ###############################################################################
 class Word:
-    """Defines a word."""
+    """The word and the position of its first character in the whole text."""
 
     def __init__(self, text, position):
-        """Word inits."""
+        """Word constructor."""
         self.text = text
         self.position = position
 
 
 class Particle:
     """
-    Describes particle you should avoir and its mitigation.
+    Describes a particle you should avoid and its mitigation.
 
-    A particle is a something that should be avoided in a FALC text. It can be
-    a
+    A particle is something that should be avoided in a FALC text. It can be
+    specific punctuation, words or verb endings. The type WORD can also be used
+    with regexes, in order to match some specific pattern, length in a word.
     """
 
     TYPE_PUNC = 'punc'     # character of punctuation
@@ -29,30 +30,47 @@ class Particle:
     TYPE_ENDI = 'endi'     # terminaison (verb)
 
     def __init__(self, regex, comment, type):
-        """Particle init."""
+        """Particle constructor."""
         self.regex = regex
         self.comment = comment
         self.type = type
 
 
 class Warning:
-    """A warning."""
+    """
+    A warning is used to inform the user about what he did wrong.
+
+    :param index: Unique id
+    :param start: Start position in the text
+    :param end: End position in the text
+    :param comment: Litteraly what the error is, will be displayed to user
+    :param snippet: What caused the error, which part of the text
+    """
 
     def __init__(self, index, start, end, comment, snippet):
-        """Warning init."""
+        """Warning constructor."""
         self.index = index
         self.start = start
         self.end = end
         self.comment = comment
         self.snippet = snippet
 
-
+###############################################################################
+#                                 Statics                                     #
+###############################################################################
+# Regex of what made a word
 R_WORDS = u'[a-zàâçéèêëîïôûùüÿñæœ\-]+\'*(?i)'
-# REGEX_PUNC = u'[.,\/#!$%\^&\*;:{}=\-_`~()?\']'
-# R_WORDS = ur'[^\\p{Z}]*\\p{L}[^\\p{Z}]*'
+# Regex for the text format
 R_SPAN = u'(<\/*span[^>]*>|<\/*p>)'
+# Regex of a sentence
 R_SENTENCE = u'[^.?!]+'
 
+# Read particle from external file. File is written as follow:
+#
+# - 3 lines per particle
+# - first line is the regex
+# - second line is the warning text
+# - third line is the type (punc, word, endi)
 particles = []
 with codecs.open('./dict/particles.txt', encoding='utf8') as f:
     lines = f.read().splitlines()
@@ -65,7 +83,7 @@ with codecs.open('./dict/particles.txt', encoding='utf8') as f:
 
 
 def clean(text):
-    """Clean text from format html."""
+    """Clean text from html formatting."""
     return re.sub(R_SPAN, '', text)
 
 
@@ -87,7 +105,7 @@ def add_warning(warnings, m, particle, offset=0):
 
 
 def process(text):
-    """Do the things."""
+    """Process the text and returns the warnings."""
     words = []
     warnings = []
 
