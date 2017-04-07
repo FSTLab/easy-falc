@@ -10,7 +10,8 @@ Tous les éléments non conformes seront mis en évidence. Un clic sur un de ces
 
 ## Technologies et utilisations
 
-* Flask & venv
+* Python 2.7.11
+* Flask 0.12.1 (avec virtualenv)
   * [Installation](http://flask.pocoo.org/docs/0.12/installation/#installation)
   * [Quickstart](http://flask.pocoo.org/docs/0.12/quickstart/#)
 * TinyMCE (Editeur WYSIWYG)
