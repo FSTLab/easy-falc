@@ -62,7 +62,8 @@ def index():
     text = ""
     try:
         t = request.form['text']
-        text = html.fromstring(t).text_content()
+        if t:
+            text = html.fromstring(t).text_content()
     except KeyError:
         print "No text received"
 
