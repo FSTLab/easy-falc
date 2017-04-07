@@ -54,7 +54,7 @@ Propre à venv
 **dict/**
 Des dictionnaires (lexique, thesaurus, fréquences) qui ont été trouvés. Ces derniers ont été pensé utiles pour la suite du projet.
 
-Contient aussi `particles.txt` fichier qui est utiliser pour stocker des types de particules à éviter ainsi qu'un message d'avertissement pour l'utilisateur. Le format du document doit suivre cette structure:
+Contient aussi `particles.txt` fichier qui est utilisé pour stocker des types de particules à éviter ainsi qu'un message d'avertissement pour l'utilisateur. Le format du document doit suivre cette structure:
 
 - Trois lignes par particle
 - Ligne 1: Expression régulière
