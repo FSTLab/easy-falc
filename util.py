@@ -55,6 +55,7 @@ class Warning:
         self.comment = comment
         self.snippet = snippet
 
+
 ###############################################################################
 #                                 Statics                                     #
 ###############################################################################
@@ -65,7 +66,9 @@ R_SPAN = u'(<\/*span[^>]*>|<\/*p>)'
 # Regex of a sentence
 R_SENTENCE = u'[^.?!]+'
 
-# Read particle from external file. File is written as follow:
+WARNING_SENTENCE_TOO_LONG = "Faites des phrases courtes."
+
+# Read particles from external file. File is written as follow:
 #
 # - 3 lines per particle
 # - first line is the regex
@@ -87,7 +90,7 @@ def clean(text):
     return re.sub(R_SPAN, '', text)
 
 
-def add_warning(warnings, m, particle, offset=0):
+def add_warning(warnings, m, comment, offset=0):
     """
     Create a Warning object, given the following parameters.
 
@@ -100,40 +103,40 @@ def add_warning(warnings, m, particle, offset=0):
     start = m.start() + offset
     snippet = m.group()
     end = start + len(snippet) - 1
-    comment = particle.comment
     warnings.append(Warning(index, start, end, comment, snippet))
 
 
 def process(text):
-    """Process the text and returns the warnings."""
+    """
+    Process the text in order to get the differents warnings.
+
+    :return warnings:   list of found warnings
+    """
     words = []
     warnings = []
 
     # Check sentence length
     for m in re.compile(R_SENTENCE).finditer(text):
         if len(m.group().split(' ')) > 12:
-            index = len(warnings)
-            start = m.start()
-            snippet = m.group()
-            end = start + len(snippet) - 1
-            warnings.append(Warning(index, start, end, comment, snippet))
+            add_warning(warnings, m, WARNING_SENTENCE_TOO_LONG)
 
-    # Check punctutation that should be avoided
+    # Check punctutation particles
     for particle in particles:
         if particle.type == Particle.TYPE_PUNC:
             for m in re.compile(particle.regex).finditer(text):
-                add_warning(warnings, m, particle)
+                add_warning(warnings, m, particle.comment)
 
-    # Split text to words, keeping offset in 2nd item of tuple
+    # Split text to words
     for m in re.compile(R_WORDS).finditer(text):
-        words.append((m.group(), m.start()))
+        words.append(Word(m.group(), m.start()))
 
     # Check word particles
     for word in words:
         for particle in particles:
             if particle.type == Particle.TYPE_WORD:
+                # from the start to the end of the word
                 r = '^' + particle.regex + '$'
-                for m in re.compile(r).finditer(word[0]):
-                    add_warning(warnings, m, particle, word[1])
+                for m in re.compile(r).finditer(word.text):
+                    add_warning(warnings, m, particle.comment, word.position)
 
-    return words, warnings
+    return warnings
