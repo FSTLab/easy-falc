@@ -7,6 +7,7 @@ from flask import render_template
 import util
 from lxml import html
 app = Flask(__name__)
+util.init_thesauraus()
 
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True

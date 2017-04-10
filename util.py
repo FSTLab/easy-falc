@@ -2,6 +2,7 @@
 """Util methods for FALC."""
 import re
 import codecs
+from polyglot.text import Text
 
 
 ###############################################################################
@@ -139,4 +140,105 @@ def process(text):
                 for m in re.compile(r).finditer(word.text):
                     add_warning(warnings, m, particle.comment, word.position)
 
+    simplify(text, warnings)
     return warnings
+
+
+word_freq = {}
+lemma = {}
+synonyms = {}
+replacement = {}
+
+
+def init_thesauraus():
+
+    th_file = open('dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt')
+
+    for i in range(0, 16):
+        th_file.readline()
+    for ln in th_file:
+        lns = ln.strip().split()
+        word_freq[lns[1]] = float(lns[-5])
+        lemma[lns[1]] = lns[2]
+    th_file.close()
+
+    with open('dict/thesaurus-v2.3/thes_fr.dat') as sv_file:
+        sv_file.readline()
+        prev_word = ''
+        for ln in sv_file:
+            if ln.startswith('(') and prev_word != '':
+                synonyms[prev_word] = ln.strip().split('|')
+            else:
+                prev_word = ln.strip().split('|')[0]
+
+    for word in word_freq:
+        if word in synonyms and len(synonyms[word])>0:
+            wf_pair = [(w, word_freq[w]) for w in synonyms[word] 
+                        if w in word_freq and 
+                           word_freq[w]>word_freq[word] and 
+                           len(w)<len(word)]
+
+            if len(wf_pair) == 1:
+                newword_pair = wf_pair[0]
+                replacement[word] = newword_pair[0]
+            elif len(wf_pair) > 0:
+                newword_pair = sorted(wf_pair, reverse=True, key=lambda x: x[1])[0]
+                replacement[word] = newword_pair[0]
+
+
+def replace_propn(word):
+    if word.startswith("l'") or word.startswith("d'"):
+        word = word.split("'")[1]
+    if word in replacement:
+        return replacement[word]
+    return None
+
+
+def replace_verb(verb):
+    if verb.startswith("l'") or verb.startswith("d'"):
+        verb = verb.split("'")[1]
+    if verb in lemma:
+        verb_lem = lemma[verb]
+    else:
+        print("No lemma for %s" % verb)
+        return None
+    if verb_lem not in replacement:
+        print("No replacement for %s" % verb)
+        return None
+    rep_verb = replacement[verb_lem]
+    return rep_verb
+
+
+def simplify(text, warnings):
+    if len(text.strip()) == 0 or text is None:
+        return;
+    pgText = Text(text)
+    pgText.hint_language_code= 'fr'
+    pgText.pos_tags
+
+    for word, pos in pgText.pos_tags:
+        startpos = text.index(word)
+        if pos == u'PRON':
+            new_word = replace_propn(word)
+            if new_word:
+                print word
+                index = len(warnings)
+                warnings.append(Warning(index, startpos, startpos+len(word), 
+                                        "Utiliser mot simple", new_word))
+        elif pos == u'VERB':
+            if word.startswith("l'") or word.startswith("d'"):
+                verb = word.split("'")[1]
+            else:
+                verb = word
+            new_word = replace_verb(verb)
+            if new_word:
+                index = len(warnings)
+                warnings.append(Warning(index, startpos, startpos+len(word), "Utiliser:", lemma[verb] + ' -> ' + new_word))
+    for sentence in Text(text).sentences:
+        sentstr = str(sentence)
+        if sentstr.count(',') >= 1:
+            idofcomma = sentstr.index(',')
+            startidx = sentence.start-1+idofcomma
+            index = len(warnings)
+#           TODO: change message to French
+            warnings.append(Warning(index, startidx, startidx+5, "Avoid clauses", "Delete or use seperate sentences"))
