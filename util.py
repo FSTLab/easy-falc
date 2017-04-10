@@ -150,7 +150,7 @@ synonyms = {}
 replacement = {}
 
 
-def init_thesauraus():
+def init_thesaurus():
 
     th_file = open('dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt')
 
