@@ -69,6 +69,8 @@ R_SENTENCE = u'[^.?!]+'
 
 WARNING_SENTENCE_TOO_LONG = "Faites des phrases courtes."
 
+PATH_LEX = 'dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt'
+
 # Read particles from external file. File is written as follow:
 #
 # - 3 lines per particle
@@ -152,7 +154,7 @@ replacement = {}
 
 def init_thesaurus():
 
-    th_file = open('dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt')
+    th_file = open(PATH_LEX)
 
     for i in range(0, 16):
         th_file.readline()
@@ -172,17 +174,19 @@ def init_thesaurus():
                 prev_word = ln.strip().split('|')[0]
 
     for word in word_freq:
-        if word in synonyms and len(synonyms[word])>0:
-            wf_pair = [(w, word_freq[w]) for w in synonyms[word] 
-                        if w in word_freq and 
-                           word_freq[w]>word_freq[word] and 
-                           len(w)<len(word)]
+        if word in synonyms and len(synonyms[word]) > 0:
+            wf_pair = [(w, word_freq[w]) for w in synonyms[word]
+                       if w in word_freq and
+                       word_freq[w] > word_freq[word] and
+                       len(w) < len(word)]
 
             if len(wf_pair) == 1:
                 newword_pair = wf_pair[0]
                 replacement[word] = newword_pair[0]
             elif len(wf_pair) > 0:
-                newword_pair = sorted(wf_pair, reverse=True, key=lambda x: x[1])[0]
+                newword_pair = sorted(wf_pair,
+                                      reverse=True,
+                                      key=lambda x: x[1])[0]
                 replacement[word] = newword_pair[0]
 
 
@@ -211,9 +215,9 @@ def replace_verb(verb):
 
 def simplify(text, warnings):
     if len(text.strip()) == 0 or text is None:
-        return;
+        return
     pgText = Text(text)
-    pgText.hint_language_code= 'fr'
+    pgText.hint_language_code = 'fr'
     pgText.pos_tags
 
     for word, pos in pgText.pos_tags:
@@ -223,7 +227,7 @@ def simplify(text, warnings):
             if new_word:
                 print word
                 index = len(warnings)
-                warnings.append(Warning(index, startpos, startpos+len(word), 
+                warnings.append(Warning(index, startpos, startpos+len(word),
                                         "Utiliser mot simple", new_word))
         elif pos == u'VERB':
             if word.startswith("l'") or word.startswith("d'"):
@@ -233,7 +237,15 @@ def simplify(text, warnings):
             new_word = replace_verb(verb)
             if new_word:
                 index = len(warnings)
-                warnings.append(Warning(index, startpos, startpos+len(word), "Utiliser:", lemma[verb] + ' -> ' + new_word))
+                warnings.append(
+                    Warning(
+                        index,
+                        startpos,
+                        startpos + len(word),
+                        "Utiliser:",
+                        lemma[verb] + ' -> ' + new_word
+                        )
+                    )
     for sentence in Text(text).sentences:
         sentstr = str(sentence)
         if sentstr.count(',') >= 1:
@@ -241,4 +253,12 @@ def simplify(text, warnings):
             startidx = sentence.start-1+idofcomma
             index = len(warnings)
 #           TODO: change message to French
-            warnings.append(Warning(index, startidx, startidx+5, "Avoid clauses", "Delete or use seperate sentences"))
+            warnings.append(
+                Warning(
+                    index,
+                    startidx,
+                    startidx + 5,
+                    "Avoid clauses",
+                    "Delete or use seperate sentences"
+                    )
+                )
