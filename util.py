@@ -57,6 +57,16 @@ class Warning:
         self.snippet = snippet
 
 
+    def serialize(self):
+        return {
+            'index': self.index,
+            'start': self.start,
+            'end': self.end,
+            'comment': self.comment,
+            'snippet': self.snippet,
+        }
+
+
 ###############################################################################
 #                                 Statics                                     #
 ###############################################################################
@@ -225,7 +235,7 @@ def simplify(text, warnings):
         if pos == u'PRON':
             new_word = replace_propn(word)
             if new_word:
-                print word
+                print(word)
                 index = len(warnings)
                 warnings.append(Warning(index, startpos, startpos+len(word),
                                         "Utiliser mot simple", new_word))

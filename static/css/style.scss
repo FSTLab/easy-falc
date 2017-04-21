@@ -185,13 +185,16 @@ footer {
 	padding: 5px;
 }
 
-textarea.main-text {
+.textarea {
 	width: 100%;
+	padding: 10px;
 	height: 300px;
 	box-sizing: border-box;
 	resize: none;
-	font-family: 'Open Sans', sans-serif;
-	font-size: 16px;
+	font-weight: 300;
+	font-size: 18px;
+  box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
+	background-color: white;
 }
 
 code.word {

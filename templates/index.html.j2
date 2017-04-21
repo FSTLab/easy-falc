@@ -21,53 +21,28 @@
 	    </div>
 	</div>
 
-    <form action="/" id="myform" method="post">
+    <form action="/" id="myform" method="post" onsubmit='copyContent()'>
+			<input type="hidden" name="text-base" id="hidden-text-base"/>
         <div class="row">
-            <h1> </h1>
-        </div>
-
-        <div class="row">
-            <div class="medium-8 columns">
-                <div class="row">
-                    <textarea id="myta" class="main-text" name="text" form="myform">
-                        {% for t in text -%}
-                        {% set outer_loop = loop -%}
-                            {% for warning in warnings -%}
-                                {% if outer_loop.index0 == warning.start %}
-                                    <span id="warning-{{ warning.index }}" style="background-color: #ffe18f;">
-                                {% endif %}
-                            {%- endfor -%}
-                            {{ t }}
-                            {%- for warning in warnings -%}
-                                {% if outer_loop.index0 == warning.end -%}
-                                    </span>
-                                {%- endif %}
-                            {%- endfor %}
-                        {%- endfor %}
-                    </textarea>
-                </div>
+            <div class="medium-6 columns">
+								<h6>Français</h6>
+								  <div id="text-base" class="text-base textarea" form="myform" contenteditable>
+										<!-- user text -->
+                  </div>
                 <br>
-                <div class="row">
-                    <input type="submit" class="button" value="Évaluer" />
-                </div>
+                <input type="submit" class="button" value="Évaluer" />
             </div>
-            <div class="medium-4 columns">
-                {% if warnings %}
-                    <div class="callout">
-                        <h5>Errors summary</h5>
-                        <span class="badge alert">{{ warnings|length }}</span> errors.
-                    </div>
-                    {% for warning in warnings %}
-                        <div class="callout alert hide" id="warning-{{ warning.index }}">
-                            <p>{{ warning.comment }}</p>
-                            <p class="warning-snippet"><i>{{ warning.snippet }}</i></p>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="callout success">
-                        <p>Aucun problème rencontré</p>
-                    </div>
-                {% endif %}
+						<div class="medium-6 columns">
+							<h6>Français FALC</h6>
+							<div id="text-falc" class="text-falc textarea" name="text-falc" contenteditable="true">
+								Entrez du texte à gauche.
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+            <div class="medium-4 columns" id="warnings-container">
+							<!-- jQuery input the warnings on the fly -->
             </div>
         </div>
     </form>

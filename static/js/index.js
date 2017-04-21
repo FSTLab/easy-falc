@@ -1,43 +1,109 @@
 $(document).ready(function() {
-    tinymce.init({
-        selector: 'textarea'
-    });
 
-    var tiny_ifr = $('#myta_ifr');
-
-    tiny_ifr.contents().find("[id^=warning-]").mouseenter(function() {
-        var index = parseInt($(this).attr("id").replace('warning-', ''), 10);
-        highlight(index, true);
-    });
-
-    tiny_ifr.contents().find("[id^=warning-]").mouseleave(function() {
-        var index = parseInt($(this).attr("id").replace('warning-', ''), 10);
-        highlight(index, false);
-    });
-
-    $("[id^=warning-]").mouseenter(function() {
+    $('body').on('mouseenter', 'span[id^=warning-]', function(e) {
         var index = parseInt($(this).attr("id").replace('warning-', ''), 10);
         console.log("enters");
         highlight(index, true);
     });
 
-    $("[id^=warning-]").mouseleave(function() {
+        $('body').on('mouseleave', 'span[id^=warning-]', function(e) {
         var index = parseInt($(this).attr("id").replace('warning-', ''), 10);
         console.log("leaves");
         highlight(index, false);
     });
 
     function highlight(index, enters) {
-        var tiny_ifr = $('#myta_ifr');
-        var a = tiny_ifr.contents().find("[id=warning-" + index + "]");
-        var b = $("[id=warning-" + index + "]");
+        var divs = $("div[id=warning-" + index + "]");
+        var spans = $("span[id=warning-" + index + "]");
         if (enters) {
-            a.css("background-color", "#fdca40");
-            b.removeClass("hide");
+            divs.removeClass("hide");
+            spans.css('background-color', '#fdca40');
         } else {
-            a.css("background-color", "#ffe18f");
-            b.addClass("hide");
+            divs.addClass("hide");
+            spans.css('background-color', '#ffe18f');
         }
+    }
+
+    var key_timeout;
+
+    $('#text-base').keypress(function() {
+      clearTimeout(key_timeout);
+      key_timeout = setTimeout(doShit, 500);
+    });
+
+    function doShit(){
+      var text_base = $('#text-base').text()
+      $.ajax({
+        url: '/translate',
+        data: {
+          'text-base': text_base
+        },
+        type: 'POST',
+        success: function(response){
+          var warnings = response['warnings'];
+          var text = response['text'];
+          console.log(warnings);
+          update(text, warnings);
+        }
+      });
+    }
+
+    function update(text, warnings){
+      generateText(text, warnings);
+      generateWarnings(warnings);
+    }
+
+
+    function generateText(text, warnings){
+      var c = $('#text-falc');
+
+      var output = '';
+
+      for(var i = 0, len = text.length; i < len; i++){
+
+        $.each(warnings, function(index, value){
+          if (i == value['start']){
+            output += '<span id="warning-' + value['index'] + '" \
+                      style="background-color: #ffe18f;">';
+          }
+        });
+
+        output += text[i];
+
+        $.each(warnings, function(index, value){
+          if (i == value['end']){
+            output += '</span>';
+          }
+        });
+      }
+
+      c.html(output);
+
+    }
+
+
+    function generateWarnings(warnings){
+      var output = '';
+
+      if(warnings.length > 0){
+        output += '<div class="callout">';
+        output += '<h5>Errors summary</h5>';
+        output += '<span class="badge alert">' + warnings.length + '</span> errors.';
+        output += '</div>';
+
+        $.each(warnings, function(index, value){
+          output += '<div class="callout alert hide" id="warning-' + index +'">';
+          output += '<p>' + value['comment'] + '</p>';
+          output += '<p class="warning-snippet"><i>' + value['snippet'] + '</i></p>';
+          output += '</div>';
+        });
+      }else{
+        output += '<div class="callout success">';
+        output += '<p>Aucune problème rencontré</p>';
+        output += '</div>';
+      }
+
+      $('#warnings-container').html(output);
     }
 
     /*$("#myform").submit(function(event) {

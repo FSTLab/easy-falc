@@ -4,6 +4,7 @@ from flask import g
 from flask import Flask
 from flask import request
 from flask import render_template
+from flask import jsonify
 import util
 from lxml import html
 app = Flask(__name__)
@@ -57,21 +58,22 @@ def close_connection(exception):
 def index():
     """
     Index page.
-
-    Get form text, processes it and show warnings.
     """
-    text = ""
-    try:
-        t = request.form['text']
-        if t:
-            text = html.fromstring(t).text_content()
-    except KeyError:
-        print "No text received"
-
-    warnings = util.process(text)
 
     return render_template('index.html.j2',
-                           text=text,
-                           warnings=warnings,
+                           text='',
+                           warnings=[],
                            css='index',
                            js='index')
+
+
+@app.route('/translate', methods=['POST'])
+def translate():
+    """
+    This translates.
+    """
+    t = request.form['text-base']
+    # text = html.fromstring(t).text_content()
+    print(t)
+    warnings = util.process(t)
+    return jsonify(text=t, warnings=[w.serialize() for w in warnings])

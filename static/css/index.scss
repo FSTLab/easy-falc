@@ -4,7 +4,7 @@
 	border-bottom: 1px solid darken($background, 10%);
 	background-color: $color-grey;
 	color: $color-grey-light;
-	height: 400px;
+	height: 200px;
 	overflow: hidden;
 
 	button {
@@ -15,14 +15,14 @@
 		background-image: url('../img/bg.png');
 		background-repeat: no-repeat;
 		background-position: right;
-		height: 400px;
+		height: 200px;
 	}
 
 	#banner_text {
 		color: $color-grey-light;
 		max-width: 600px;
 		padding: 4rem;
-		position: absolute;
+		// position: absolute;
 
 		.subheader {
 			color: $color-grey-light;
