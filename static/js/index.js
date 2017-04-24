@@ -1,25 +1,41 @@
 $(document).ready(function() {
 
     $('body').on('mouseenter', 'span[id^=warning-]', function(e) {
-        var index = parseInt($(this).attr("id").replace('warning-', ''), 10);
-        console.log("enters");
-        highlight(index, true);
+        var index = getCalloutIndex(this);
+        showCallout(index, true);
     });
 
-        $('body').on('mouseleave', 'span[id^=warning-]', function(e) {
-        var index = parseInt($(this).attr("id").replace('warning-', ''), 10);
-        console.log("leaves");
-        highlight(index, false);
+    $('body').on('mousemove', 'span[id^=warning-]', function(e) {
+        var index = getCalloutIndex(this);
+        setWarningsPosition(e.pageX, e.pageY);
     });
 
-    function highlight(index, enters) {
-        var divs = $("div[id=warning-" + index + "]");
+    $('body').on('mouseleave', 'span[id^=warning-]', function(e) {
+        var index = getCalloutIndex(this);
+        showCallout(index, false);
+    });
+
+    function getCalloutIndex(callout){
+      return parseInt($(callout).attr("id").replace('warning-', ''), 10);
+    }
+
+    function setWarningsPosition(x, y) {
+      $('#warnings-container').css({
+            left: x,
+            top: y
+        });
+    }
+
+    function showCallout(index, enters) {
+      // it also highlights the text
+        var callout = $("div[id=warning-" + index + "]");
         var spans = $("span[id=warning-" + index + "]");
+
         if (enters) {
-            divs.removeClass("hide");
+            callout.removeClass("hide");
             spans.css('background-color', '#fdca40');
         } else {
-            divs.addClass("hide");
+            callout.addClass("hide");
             spans.css('background-color', '#ffe18f');
         }
     }
@@ -28,10 +44,10 @@ $(document).ready(function() {
 
     $('#text-base').keypress(function() {
       clearTimeout(key_timeout);
-      key_timeout = setTimeout(doShit, 500);
+      key_timeout = setTimeout(asyncTranslate, 500);
     });
 
-    function doShit(){
+    function asyncTranslate(){
       var text_base = $('#text-base').text()
       $.ajax({
         url: '/translate',
@@ -86,10 +102,10 @@ $(document).ready(function() {
       var output = '';
 
       if(warnings.length > 0){
-        output += '<div class="callout">';
-        output += '<h5>Errors summary</h5>';
-        output += '<span class="badge alert">' + warnings.length + '</span> errors.';
-        output += '</div>';
+        // output += '<div class="callout">';
+        // output += '<h5>Errors summary</h5>';
+        // output += '<span class="badge alert">' + warnings.length + '</span> errors.';
+        // output += '</div>';
 
         $.each(warnings, function(index, value){
           output += '<div class="callout alert hide" id="warning-' + index +'">';
@@ -98,9 +114,9 @@ $(document).ready(function() {
           output += '</div>';
         });
       }else{
-        output += '<div class="callout success">';
-        output += '<p>Aucune problème rencontré</p>';
-        output += '</div>';
+        // output += '<div class="callout success">';
+        // output += '<p>Aucune problème rencontré</p>';
+        // output += '</div>';
       }
 
       $('#warnings-container').html(output);
