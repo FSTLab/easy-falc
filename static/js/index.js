@@ -1,5 +1,13 @@
 $(document).ready(function() {
 
+
+    // Remove paste formatting
+    $('[id^=text-]').bind('paste', function(e){
+        e.preventDefault();
+        var text = e.originalEvent.clipboardData.getData('text');
+        document.execCommand("insertHTML", false, text);
+    });
+
     $('body').on('mouseenter', 'span[id^=warning-]', function(e) {
         var index = getCalloutIndex(this);
         showCallout(index, true);
@@ -21,7 +29,7 @@ $(document).ready(function() {
 
     function setWarningsPosition(x, y) {
       $('#warnings-container').css({
-            left: x,
+            left: x + 10,
             top: y
         });
     }
