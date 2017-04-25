@@ -38,6 +38,16 @@
 	}
 }
 
+.callout.alert{
+	padding: 0px;
+	border-color: transparent;
+	margin-top: 1rem;
+
+	#warning-title{
+		font-weight: 600;
+	}
+}
+
 #myform {
 	padding-bottom: 2rem;
 }
@@ -45,4 +55,6 @@
 #warnings-container{
 	position: absolute;
 	float: left;
+	background-color: #ffe18f;
+	font-weight: 300;
 }

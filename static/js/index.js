@@ -117,7 +117,7 @@ $(document).ready(function() {
 
         $.each(warnings, function(index, value){
           output += '<div class="callout alert hide" id="warning-' + index +'">';
-          output += '<p>' + value['comment'] + '</p>';
+          output += '<p id="warning-title">' + value['comment'] + '</p>';
           output += '<p class="warning-snippet"><i>' + value['snippet'] + '</i></p>';
           output += '</div>';
         });
