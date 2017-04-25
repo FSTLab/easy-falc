@@ -56,7 +56,6 @@ class Warning:
         self.comment = comment
         self.snippet = snippet
 
-
     def serialize(self):
         return {
             'index': self.index,
@@ -164,7 +163,7 @@ replacement = {}
 
 def init_thesaurus():
 
-    th_file = open(PATH_LEX)
+    th_file = open(PATH_LEX, encoding='utf8')
 
     for i in range(0, 16):
         th_file.readline()
