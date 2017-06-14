@@ -3,6 +3,7 @@
 import re
 import codecs
 from summarize import summarize as pysummarize
+import os
 from polyglot.text import Text
 
 
@@ -79,7 +80,9 @@ R_SENTENCE = u'[^.?!]+'
 
 WARNING_SENTENCE_TOO_LONG = "Faites des phrases courtes."
 
-PATH_LEX = 'dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt'
+PATH = os.path.dirname(os.path.abspath(__file__))
+PATH_LEX = PATH +'/dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt'
+PATH_DICT = PATH + '/dict/particles.txt'
 
 # Read particles from external file. File is written as follow:
 #
@@ -88,7 +91,7 @@ PATH_LEX = 'dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt'
 # - second line is the warning text
 # - third line is the type (punc, word, endi)
 particles = []
-with codecs.open('./dict/particles.txt', encoding='utf8') as f:
+with codecs.open(PATH_DICT, encoding='utf8') as f:
     lines = f.read().splitlines()
     for i in range(0, len(lines), 3):
         regex = lines[i]
@@ -177,7 +180,7 @@ def init_thesaurus():
         lemma[lns[1]] = lns[2]
     th_file.close()
 
-    with open('dict/thesaurus-v2.3/thes_fr.dat') as sv_file:
+    with open(PATH + '/dict/thesaurus-v2.3/thes_fr.dat') as sv_file:
         sv_file.readline()
         prev_word = ''
         for ln in sv_file:
