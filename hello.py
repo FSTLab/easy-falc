@@ -72,8 +72,18 @@ def translate():
     """
     This translates.
     """
-    t = request.form['text-base']
+    text = request.form['text']
     # text = html.fromstring(t).text_content()
-    print(t)
-    warnings = util.process(t)
-    return jsonify(text=t, warnings=[w.serialize() for w in warnings])
+    print(text)
+    warnings = util.process(text)
+    return jsonify(text=text, warnings=[w.serialize() for w in warnings])
+
+@app.route('/summarize', methods=['POST'])
+def summarize():
+    """
+    Summarize text.
+    """
+    text = request.form['text']
+    summary = util.summarize(text)
+    warnings = util.process(summary)
+    return jsonify(summary=summary, warnings=[w.serialize() for w in warnings])

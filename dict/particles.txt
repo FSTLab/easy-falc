@@ -1,7 +1,7 @@
 n[\'e]
 utilise une formulation négative, privilégier plutôt la forme affirmative
 word
-.{8,}
+.{10,}
 Choisir des mots courts
 word
 [;:\(\)\[\]\*]

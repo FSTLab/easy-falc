@@ -48,29 +48,50 @@ $(document).ready(function() {
         }
     }
 
-    var key_timeout;
+    var key_timeout0;
+    var key_timeout1;
 
-    $('#text-base').keypress(function() {
-      clearTimeout(key_timeout);
-      key_timeout = setTimeout(asyncTranslate, 500);
+    $('#text-base').keydown(function() {
+      clearTimeout(key_timeout0);
+      key_timeout0 = setTimeout(function(){asyncTranslate('#text-base');}, 500);
     });
 
-    function asyncTranslate(){
-      var text_base = $('#text-base').text()
+    $('#text-falc').keydown(function() {
+      clearTimeout(key_timeout1);
+      key_timeout1 = setTimeout(function(){asyncTranslate('#text-falc');}, 500);
+    });
+
+    function asyncTranslate(textarea){
+      var text = $(textarea).text()
       $.ajax({
         url: '/translate',
         data: {
-          'text-base': text_base
+          'text': text
         },
         type: 'POST',
         success: function(response){
           var warnings = response['warnings'];
           var text = response['text'];
-          console.log(warnings);
           update(text, warnings);
         }
       });
     }
+
+    $('#button-summarize').click(function() {
+      var text = $('#text-base').text();
+      $.ajax({
+        url: '/summarize',
+        data: {
+          'text': text
+        },
+        type: 'POST',
+        success: function(response){
+          var summary = response['summary'];
+          var warnings = response['warnings'];
+          update(summary, warnings);
+        }
+      })
+    });
 
     function update(text, warnings){
       generateText(text, warnings);
@@ -107,27 +128,29 @@ $(document).ready(function() {
 
 
     function generateWarnings(warnings){
-      var output = '';
+      var html_warnings = '';
+      var html_summary = '';
 
       if(warnings.length > 0){
-        // output += '<div class="callout">';
-        // output += '<h5>Errors summary</h5>';
-        // output += '<span class="badge alert">' + warnings.length + '</span> errors.';
-        // output += '</div>';
+        html_summary += '<div class="callout">';
+        html_summary += '<h5>Errors summary</h5>';
+        html_summary += '<span class="badge alert">' + warnings.length + '</span> errors.';
+        html_summary += '</div>';
 
         $.each(warnings, function(index, value){
-          output += '<div class="callout alert hide" id="warning-' + index +'">';
-          output += '<p id="warning-title">' + value['comment'] + '</p>';
-          output += '<p class="warning-snippet"><i>' + value['snippet'] + '</i></p>';
-          output += '</div>';
+          html_warnings += '<div class="callout alert hide" id="warning-' + index +'">';
+          html_warnings += '<p id="warning-title">' + value['comment'] + '</p>';
+          html_warnings += '<p class="warning-snippet"><i>' + value['snippet'] + '</i></p>';
+          html_warnings += '</div>';
         });
       }else{
-        // output += '<div class="callout success">';
-        // output += '<p>Aucune problème rencontré</p>';
-        // output += '</div>';
+        html_summary += '<div class="callout success">';
+        html_summary += '<p>Aucune problème rencontré</p>';
+        html_summary += '</div>';
       }
 
-      $('#warnings-container').html(output);
+      $('#warnings-container').html(html_warnings);
+      $('#warnings-summary').html(html_summary);
     }
 
     /*$("#myform").submit(function(event) {

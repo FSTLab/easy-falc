@@ -2,6 +2,7 @@
 """Util methods for FALC."""
 import re
 import codecs
+from summarize import summarize as pysummarize
 from polyglot.text import Text
 
 
@@ -117,6 +118,9 @@ def add_warning(warnings, m, comment, offset=0):
     end = start + len(snippet) - 1
     warnings.append(Warning(index, start, end, comment, snippet))
 
+
+def summarize(text):
+    return pysummarize(text, language='french', sentence_count=2)
 
 def process(text):
     """
