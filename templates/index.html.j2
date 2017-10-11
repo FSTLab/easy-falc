@@ -5,60 +5,67 @@
 {% block title %}Index{% endblock %}
 
 {% block content %}
-	<div id="banner">
-	    <div class="row">
-	        <div id="banner_text" class="medium-7 large-6 columns">
-	            <h1>EasyFALC</h1>
-	            <p class="subheader">
-					EasyFALC est une application web multiplateforme d’aide à la création de texte « facile à lire et à comprendre » (FALC).<br/><br/>
-					Il suffit de saisir votre texte dans la zone prévue à cet effet, puis de presser sur « évaluer ».<br/><br/>
-					Tous les éléments non conformes seront mis en évidence. Un clic sur un de ces éléments fera apparaitre une suggestion de correction sur la droite.
-				</p>
-	            <!--button class="button">Take a Tour</button>
-	            <button class="button highlight">Start a free trial</button-->
-	        </div>
-			<img src="static/img/logo.png" alt="Logo" />
-	    </div>
+<div id="banner">
+	<div class="row">
+		<div id="banner_text" class="medium-7 large-6 columns">
+			<h1>EasyFALC</h1>
+			<p class="subheader">
+				EasyFALC est une application web multiplateforme d’aide à la création de texte « facile à lire et à comprendre » (FALC).<br/><br/>
+				Il suffit de saisir votre texte dans la zone prévue à cet effet, puis de presser sur « évaluer ».<br/><br/>
+				Tous les éléments non conformes seront mis en évidence. Un clic sur un de ces éléments fera apparaitre une suggestion de correction sur la droite.
+			</p>
+		</div>
+		<img src="static/img/logo.png" alt="Logo" />
 	</div>
+</div>
 
-			<input type="hidden" name="text-base" id="hidden-text-base"/>
-        <div class="row">
-            <div class="medium-6 columns">
-								<h6>Français</h6>
-								  <div id="text-base" class="text-base textarea" form="myform" contenteditable>
-										<!-- user text -->
-                  </div>
-            </div>
-						<div class="medium-6 columns">
-							<h6>Français FALC</h6>
-							<div id="text-falc" class="text-falc textarea" name="text-falc" contenteditable="true">
-								Entrez du texte à gauche.
-							</div>
-						</div>
-					</div>
+<input type="hidden" name="text-base" id="hidden-text-base"/>
+	<div class="row">
+		<div class="medium-6 columns">
+			<div class="row area-init">
+				<h6>Français</h6>
+				<div id="text-base" class="text-base textarea" form="myform" contenteditable>
+					<!-- user text -->
+				</div>
+			</div>
+			<div class="row area-falc">
+				<h6>Français FALC</h6>
+				<div id="text-falc" class="text-falc textarea" name="text-falc" contenteditable="true">
+					Entrez du texte à gauche.
+				</div>
+			</div>
+		</div>
+		<div class="medium-6 columns area-review">
+			<h1>Évaluation</h1>
+			<div class="score-container">
+				<span class="score-filler" style="width:25%"></span>
+			</div>
+		</div>
+	</div>
+</div>
 
-					<div class="row">
-						<div class="medium-6 columns">
-							<button class="button" id="button-summarize">Résumer</button>
-						</div>
-						<div class="medium-6 columns" id="warnings-summary">
-								<!--
-								jQuery input the warnings on the fly
+<div class="row">
+	<div class="medium-6 columns">
+		<button class="button" id="button-summarize">Résumer</button>
+	</div>
+	<div class="medium-6 columns" id="warnings-summary">
+		<!--
+		jQuery input the warnings on the fly
 
-								This container summarizes the warnings
-							  -->
-						</div>
-					</div>
+		This container summarizes the warnings
+		-->
+	</div>
+</div>
 
-					<hr>
+<hr>
 
-					<div class="row">
-            <div class="medium-4 columns" id="warnings-container">
-							<!--
-							jQuery input the warnings on the fly
+<div class="row">
+	<div class="medium-4 columns" id="warnings-container">
+		<!--
+			jQuery input the warnings on the fly
 
-							This container follow the mouse position
-						  -->
-            </div>
-        </div>
+			This container follow the mouse position
+		-->
+	</div>
+</div>
 {% endblock %}

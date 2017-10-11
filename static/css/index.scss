@@ -1,5 +1,29 @@
 @import 'variables';
 
+.score-container{
+	width: 300px;
+	height: 80px;
+	background-color: darkgrey;
+}
+
+.score-filler{
+	display: block;
+	height: 100%;
+	background-color: green;
+}
+
+.area-init, .area-falc{
+	padding: 10px;
+}
+
+.area-review{
+	padding: 10px;
+	// background-color: white;
+	// -webkit-box-shadow: inset 0px 0px 5px 3px rgba(0,0,0,0.34);
+	// -moz-box-shadow: inset 0px 0px 5px 3px rgba(0,0,0,0.34);
+	// box-shadow: inset 0px 0px 5px 3px rgba(0,0,0,0.34);
+}
+
 #banner {
 	border-bottom: 1px solid darken($background, 10%);
 	background-color: $color-grey;
