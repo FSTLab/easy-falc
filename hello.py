@@ -60,9 +60,9 @@ def index():
     Index page.
     """
 
+    categories = util.get_categories()
     return render_template('index.html.j2',
-                           text='',
-                           warnings=[],
+                           categories=categories,
                            css='index',
                            js='index')
 

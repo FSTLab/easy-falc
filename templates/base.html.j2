@@ -9,28 +9,11 @@
 	{% if css %}
 	<link rel="stylesheet" href="static/css/{{ css }}.min.css" />
 	{% endif %}
-	
+
 	<title>EasyFALC | {% block title %}{% endblock %}</title>
 
 </head>
-<body>
-	<!--div class="title-bar" data-responsive-toggle="top-bar" data-hide-for="medium">
-	<button class="menu-icon" type="button" data-toggle></button>
-	<div class="title-bar-title">Menu</div>
-</div>
-
-<div class="top-bar" id="top-bar">
-<div id="top-bar-content">
-<div class="top-bar-title hide-for-small-only"><img src="static/favicon.png" alt="FALC" />FALC</div>
-<ul class="dropdown menu" data-responsive-menu="accordion">
-<li><a href="#">What's FALC ?</a></li>
-<li><a href="#">Pricing</a></li>
-<li><a href="#">About us</a></li>
-</ul>
-</div>
-</div-->
-
-<div class="arrow"></div>
+<body onload="{% block bodyparams%}{% endblock %}">
 
 <div id="content">{% block content %}{% endblock %}</div>
 

@@ -67,6 +67,24 @@ class Warning:
             'snippet': self.snippet,
         }
 
+class Category:
+    # Polarities
+    BAD = 0
+    ADVICE = 1
+    GOOD = 2
+
+    def __init__(self, title, polarity):
+        self.title = title
+        self.polarity = polarity
+
+
+class Tip:
+    def __init__(self, category_id, start, end, snippet):
+        self.category_id = category_id
+        self.start = start
+        self.end = end
+        self.snippet = snippet
+
 
 ###############################################################################
 #                                 Statics                                     #
@@ -106,6 +124,10 @@ def clean(text):
     return re.sub(R_SPAN, '', text)
 
 
+def get_categories():
+    return ['test', 'lol']
+
+
 def add_warning(warnings, m, comment, offset=0):
     """
     Create a Warning object, given the following parameters.
@@ -133,11 +155,14 @@ def process(text):
     """
     words = []
     warnings = []
+    tips = []
 
     # Check sentence length
     for m in re.compile(R_SENTENCE).finditer(text):
         if len(m.group().split(' ')) > 12:
             add_warning(warnings, m, WARNING_SENTENCE_TOO_LONG)
+            tip = Tip()
+            tips.append()
 
     # Check punctutation particles
     for particle in particles:
@@ -154,7 +179,7 @@ def process(text):
         for particle in particles:
             if particle.type == Particle.TYPE_WORD:
                 # from the start to the end of the word
-                r = '^' + particle.regex + '$'
+                r = '^{}$' .format(particle.regex)
                 for m in re.compile(r).finditer(word.text):
                     add_warning(warnings, m, particle.comment, word.position)
 
