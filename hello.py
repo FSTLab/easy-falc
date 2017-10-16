@@ -61,10 +61,9 @@ def index():
     """
 
     categories = util.get_categories()
-    return render_template('index.html.j2',
-                           categories=categories,
-                           css='index',
-                           js='index')
+    categories = {key: value.serialize() for key, value in categories.items()}
+    print(categories)
+    return render_template('index.html.j2', categories=categories, css='index', js='index')
 
 
 @app.route('/translate', methods=['POST'])
@@ -73,10 +72,8 @@ def translate():
     This translates.
     """
     text = request.form['text']
-    # text = html.fromstring(t).text_content()
-    print(text)
-    warnings = util.process(text)
-    return jsonify(text=text, warnings=[w.serialize() for w in warnings])
+    tips = util.process(text)
+    return jsonify(text=text, tips=[t.serialize() for t in tips])
 
 @app.route('/summarize', methods=['POST'])
 def summarize():
@@ -85,5 +82,5 @@ def summarize():
     """
     text = request.form['text']
     summary = util.summarize(text)
-    warnings = util.process(summary)
-    return jsonify(summary=summary, warnings=[w.serialize() for w in warnings])
+    tips = util.process(summary)
+    return jsonify(summary=summary, tips=[t.serialize() for t in tips])

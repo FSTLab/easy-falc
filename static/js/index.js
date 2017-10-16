@@ -1,7 +1,8 @@
+var CATEGORIES;
 
 function saveCategories(categories){
-  console.log("Categories received");
-  console.log(categories);
+  CATEGORIES = categories;
+  console.log(CATEGORIES);
 }
 
 $(document).ready(function() {
@@ -75,9 +76,9 @@ $(document).ready(function() {
       },
       type: 'POST',
       success: function(response){
-        var warnings = response['warnings'];
+        var tips = response['tips'];
         var text = response['text'];
-        update(text, warnings);
+        update(text, tips);
       }
     });
   }
@@ -92,35 +93,35 @@ $(document).ready(function() {
       type: 'POST',
       success: function(response){
         var summary = response['summary'];
-        var warnings = response['warnings'];
-        update(summary, warnings);
+        var tips = response['tips'];
+        update(summary, tips);
       }
     })
   });
 
-  function update(text, warnings){
-    generateText(text, warnings);
-    generateWarnings(warnings);
+  function update(text, tips){
+    generateText(text, tips);
+    generateTips(tips);
   }
 
 
-  function generateText(text, warnings){
+  function generateText(text, tips){
     var c = $('#text-falc');
 
     var output = '';
 
     for(var i = 0, len = text.length; i < len; i++){
 
-      $.each(warnings, function(index, value){
+      $.each(tips, function(index, value){
         if (i == value['start']){
-          output += '<span id="warning-' + value['index'] + '" \
+          output += '<span id="warning-' + index + '" \
           style="background-color: #ffe18f;">';
         }
       });
 
       output += text[i];
 
-      $.each(warnings, function(index, value){
+      $.each(tips, function(index, value){
         if (i == value['end']){
           output += '</span>';
         }
@@ -132,24 +133,23 @@ $(document).ready(function() {
   }
 
 
-  function generateWarnings(warnings){
-    var html_warnings = '';
-    var html_summary = '';
+  function generateTips(tips){
 
-    if(warnings.length > 0){
-      html_summary += '<span class="badge alert">' + warnings.length + '</span> errors.';
+    var t = {}
 
-      $.each(warnings, function(index, value){
-        html_summary += '<p>' + value['comment'] + '</p>';
+    // Classify tips
+    $.each(tips, function(index, tip){
+      t[CATEGORIES[tip['category_id']].polarity] = tips;
+    });
 
-        html_warnings += '<div class="callout alert hide" id="warning-' + index +'">';
-        html_warnings += '<p id="warning-title">' + value['comment'] + '</p>';
-        html_warnings += '<p class="warning-snippet"><i>' + value['snippet'] + '</i></p>';
-        html_warnings += '</div>';
-      });
-    }else{
-      html_summary += '<p>Aucun problème rencontré</p>';
-    }
+    var html = '';
+
+    html += '<b>Améliorations possibles:</b><br />';
+    $.each(t[0], function(index, tip){
+      html += CATEGORIES[tip['category_id']]
+    });
+
+
 
     // $('#warnings-container').html(html_warnings);
     $('#warnings-summary').html(html_summary);

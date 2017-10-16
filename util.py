@@ -73,9 +73,16 @@ class Category:
     ADVICE = 1
     GOOD = 2
 
-    def __init__(self, title, polarity):
-        self.title = title
+    def __init__(self, polarity, title):
         self.polarity = polarity
+        self.title = title
+
+
+    def serialize(self):
+        return {
+            'polarity': self.polarity,
+            'title': self.title
+        }
 
 
 class Tip:
@@ -84,6 +91,15 @@ class Tip:
         self.start = start
         self.end = end
         self.snippet = snippet
+
+
+    def serialize(self):
+        return {
+            'category_id': self.category_id,
+            'start': self.start,
+            'end': self.end,
+            'snippet': self.snippet
+        }
 
 
 ###############################################################################
@@ -102,13 +118,39 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 PATH_LEX = PATH +'/dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt'
 PATH_DICT = PATH + '/dict/particles.txt'
 
+# Categories TODO reflect about JSON ?
+C_FREQUENT_WORD = 1000
+C_SHORT_WORD = 1001
+
+C_REMOVE_NOT_ESSENTIAL = 3000
+
+C_SENTENCE_TOO_LONG = 4000
+C_NEGATION = 4001
+C_COMPLEX_PUNCTUATION = 4002
+C_ACRONYMS = 4003
+C_LONG_WORD = 4004
+C_COMPLEX_WORD = 4005
+
+CATEGORIES = {
+    C_FREQUENT_WORD : Category(Category.GOOD, "Mot courant"),
+    C_SHORT_WORD : Category(Category.GOOD, "Mot court"),
+
+    C_REMOVE_NOT_ESSENTIAL : Category(Category.ADVICE, "Supprimer les phrases qui ne sont pas indispensables à la compréhension"),
+
+    C_SENTENCE_TOO_LONG : Category(Category.BAD, "Phrase trop longue"),
+    C_NEGATION : Category(Category.BAD, "Utilise des négations"),
+    C_COMPLEX_PUNCTUATION : Category(Category.BAD, "Caractère à éviter, utiliser une ponctuation simple"),
+    C_ACRONYMS : Category(Category.BAD, "Utilise des sigles et acronymes"),
+    C_LONG_WORD : Category(Category.BAD, "Mot trop long")
+}
+
 # Read particles from external file. File is written as follow:
 #
 # - 3 lines per particle
 # - first line is the regex
 # - second line is the warning text
 # - third line is the type (punc, word, endi)
-particles = []
+PARTICLES = []
 with codecs.open(PATH_DICT, encoding='utf8') as f:
     lines = f.read().splitlines()
     for i in range(0, len(lines), 3):
@@ -116,7 +158,7 @@ with codecs.open(PATH_DICT, encoding='utf8') as f:
         comment = lines[i + 1]
         type = lines[i + 2]
         particle = Particle(regex, comment, type)
-        particles.append(particle)
+        PARTICLES.append(particle)
 
 
 def clean(text):
@@ -125,7 +167,7 @@ def clean(text):
 
 
 def get_categories():
-    return ['test', 'lol']
+    return CATEGORIES
 
 
 def add_warning(warnings, m, comment, offset=0):
@@ -144,6 +186,12 @@ def add_warning(warnings, m, comment, offset=0):
     warnings.append(Warning(index, start, end, comment, snippet))
 
 
+def create_tip(category_id, m):
+    start = m.start()
+    snippet = m.group()
+    end = start + len(snippet) - 1
+    return Tip(category_id, start, end, snippet)
+
 def summarize(text):
     return pysummarize(text, language='french', sentence_count=2)
 
@@ -161,14 +209,14 @@ def process(text):
     for m in re.compile(R_SENTENCE).finditer(text):
         if len(m.group().split(' ')) > 12:
             add_warning(warnings, m, WARNING_SENTENCE_TOO_LONG)
-            tip = Tip()
-            tips.append()
+            tips.append(create_tip(C_SENTENCE_TOO_LONG, m))
 
     # Check punctutation particles
-    for particle in particles:
+    for particle in PARTICLES:
         if particle.type == Particle.TYPE_PUNC:
             for m in re.compile(particle.regex).finditer(text):
                 add_warning(warnings, m, particle.comment)
+                tips.append(create_tip(C_COMPLEX_PUNCTUATION, m))
 
     # Split text to words
     for m in re.compile(R_WORDS).finditer(text):
@@ -176,15 +224,16 @@ def process(text):
 
     # Check word particles
     for word in words:
-        for particle in particles:
+        for particle in PARTICLES:
             if particle.type == Particle.TYPE_WORD:
                 # from the start to the end of the word
                 r = '^{}$' .format(particle.regex)
                 for m in re.compile(r).finditer(word.text):
                     add_warning(warnings, m, particle.comment, word.position)
+                    tips.append(create_tip(int(particle.comment), m))
 
-    simplify(text, warnings)
-    return warnings
+    # simplify(text, warnings)
+    return tips
 
 
 word_freq = {}
@@ -254,7 +303,7 @@ def replace_verb(verb):
     return rep_verb
 
 
-def simplify(text, warnings):
+def simplify(text, tips):
     if len(text.strip()) == 0 or text is None:
         return
     pgText = Text(text)
@@ -270,6 +319,7 @@ def simplify(text, warnings):
                 index = len(warnings)
                 warnings.append(Warning(index, startpos, startpos+len(word),
                                         "Utiliser mot simple", new_word))
+                # tips.append(Tip(C_COMPLEX_WORD, startpos, startpos + len(word), word))
         elif pos == u'VERB':
             if word.startswith("l'") or word.startswith("d'"):
                 verb = word.split("'")[1]

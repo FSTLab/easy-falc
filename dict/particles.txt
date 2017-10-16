@@ -1,12 +1,12 @@
 n[\'e]
-utilise une formulation négative, privilégier plutôt la forme affirmative
+4001
 word
 .{10,}
-Choisir des mots courts
+4004
 word
 [;:\(\)\[\]\*]
-caractère à éviter, utiliser une ponctuation simple
+4002
 punc
 [A-Z][A-Z.]{2,}
-limiter l'usage des sigles et acronymes, plusieurs lettre de suite en majuscule
+4003
 punc
