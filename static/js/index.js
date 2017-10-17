@@ -1,12 +1,26 @@
+/**
+ * index.js - EasyFALC
+ *
+ * Created by T. Roulin
+ * 2017
+ */
+
+
+// Must always match doc TODO write doc
+var Categories = {
+  BAD : 0,
+  ADVICE : 1,
+  GOOD : 2
+};
 var CATEGORIES;
+var TIPS;
+var T;
 
 function saveCategories(categories){
   CATEGORIES = categories;
-  console.log(CATEGORIES);
 }
 
 $(document).ready(function() {
-
   // Remove paste formatting
   $('[id^=text-]').bind('paste', function(e){
     e.preventDefault();
@@ -68,7 +82,7 @@ $(document).ready(function() {
   });
 
   function asyncTranslate(textarea){
-    var text = $(textarea).text()
+    var text = $(textarea).text();
     $.ajax({
       url: '/translate',
       data: {
@@ -76,8 +90,9 @@ $(document).ready(function() {
       },
       type: 'POST',
       success: function(response){
-        var tips = response['tips'];
-        var text = response['text'];
+        var tips = response.tips;
+        TIPS = tips;
+        var text = response.text;
         update(text, tips);
       }
     });
@@ -92,67 +107,89 @@ $(document).ready(function() {
       },
       type: 'POST',
       success: function(response){
-        var summary = response['summary'];
-        var tips = response['tips'];
+        var summary = response.summary;
+        var tips = response.tips;
         update(summary, tips);
       }
-    })
+    });
   });
 
   function update(text, tips){
-    generateText(text, tips);
-    generateTips(tips);
+    $('#text-falc').html(generateText(text, tips));
+    $('#warnings-summary').html(generateTips(tips));
   }
 
 
-  function generateText(text, tips){
-    var c = $('#text-falc');
+  /**
+   * Format util for the text containers
+   */
+  function generateTextSpanBefore(index, tip, i){
+    if(i == tip.start){
+      return '<span id="warning-' + index + '" style="background-color: #ffe18f;">';
+    }else{
+      return '';
+    }
+  }
 
+    /**
+     * Format util for the text containers
+     */
+  function generateTextSpanAfter(tip, i){
+    if(i == tip.end){
+      return '</span>';
+    }else{
+      return '';
+    }
+  }
+
+  function generateText(text, tips){
     var output = '';
 
     for(var i = 0, len = text.length; i < len; i++){
-
-      $.each(tips, function(index, value){
-        if (i == value['start']){
-          output += '<span id="warning-' + index + '" \
-          style="background-color: #ffe18f;">';
-        }
-      });
-
+      for(var j = 0, lj = tips.length; j < lj; j++){
+        output += generateTextSpanBefore(j, tips[j], i);
+      }
       output += text[i];
-
-      $.each(tips, function(index, value){
-        if (i == value['end']){
-          output += '</span>';
-        }
-      });
+      for(j = 0, lj = tips.length; j < lj; j++){
+        output += generateTextSpanAfter(tips[j], i);
+      }
     }
 
-    c.html(output);
-
+    return output;
   }
-
 
   function generateTips(tips){
 
-    var t = {}
+    var t = {
+      0: [],
+      1: [],
+      2: []
+    };
+
 
     // Classify tips
     $.each(tips, function(index, tip){
-      t[CATEGORIES[tip['category_id']].polarity] = tips;
+      t[CATEGORIES[tip.category_id].polarity].push(tip);
     });
+    T = t;
 
-    var html = '';
+    var dom = '';
 
-    html += '<b>Améliorations possibles:</b><br />';
-    $.each(t[0], function(index, tip){
-      html += CATEGORIES[tip['category_id']]
-    });
-
-
+    dom += generateTipsList('Améliorations possibles', t[Categories.BAD]);
+    dom += generateTipsList('Conseils', t[Categories.ADVICE]);
+    dom += generateTipsList('Bonnes pratiques', t[Categories.GOOD]);
 
     // $('#warnings-container').html(html_warnings);
-    $('#warnings-summary').html(html_summary);
+    return dom;
+  }
+
+  function generateTipsList(title, tips){
+    var dom = '<b>' + title + '</b>';
+    dom += '<ul>';
+    $.each(tips, function(index, tip){
+      dom += '<li>' + CATEGORIES[tip.category_id].title + '</li>';
+    });
+    return dom + '</ul>';
   }
 
   /*$("#myform").submit(function(event) {

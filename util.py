@@ -77,7 +77,6 @@ class Category:
         self.polarity = polarity
         self.title = title
 
-
     def serialize(self):
         return {
             'polarity': self.polarity,
@@ -233,6 +232,8 @@ def process(text):
                     tips.append(create_tip(int(particle.comment), m))
 
     # simplify(text, warnings)
+    tips.append(Tip(1000, 0, 5, 'snippet sample'));
+    tips.append(Tip(3000, 7, 9, 'snippet sample'));
     return tips
 
 
