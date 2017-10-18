@@ -90,10 +90,7 @@ $(document).ready(function() {
       },
       type: 'POST',
       success: function(response){
-        var tips = response.tips;
-        TIPS = tips;
-        var text = response.text;
-        update(text, tips);
+        update(response.text, response.tips);
       }
     });
   }
@@ -114,9 +111,16 @@ $(document).ready(function() {
     });
   });
 
+  /**
+   * throws the update to the laoyut
+   */
   function update(text, tips){
     $('#text-falc').html(generateText(text, tips));
     $('#warnings-summary').html(generateTips(tips));
+
+    // Update foundation elements
+    $(document).foundation();
+    console.log("foundation updated");
   }
 
 
@@ -154,57 +158,53 @@ $(document).ready(function() {
         output += generateTextSpanAfter(tips[j], i);
       }
     }
-
     return output;
   }
 
   function generateTips(tips){
-
+    // Reset of t
     var t = {
-      0: [],
-      1: [],
-      2: []
+      0: {},
+      1: {},
+      2: {}
     };
-
 
     // Classify tips
     $.each(tips, function(index, tip){
-      t[CATEGORIES[tip.category_id].polarity].push(tip);
+      var cid = tip.category_id;
+      var p = CATEGORIES[cid].polarity;
+      if(cid in t[p]){
+        t[p][cid].push(tip);
+      }else{
+        t[p][cid] = [tip];
+      }
     });
+
+    //TODO remove (debug purpose)
     T = t;
 
     var dom = '';
-
     dom += generateTipsList('Améliorations possibles', t[Categories.BAD]);
     dom += generateTipsList('Conseils', t[Categories.ADVICE]);
     dom += generateTipsList('Bonnes pratiques', t[Categories.GOOD]);
-
-    // $('#warnings-container').html(html_warnings);
     return dom;
   }
 
   function generateTipsList(title, tips){
-    var dom = '<b>' + title + '</b>';
-    dom += '<ul>';
+    var dom = '';
+    dom += '<h1>' + title + '</h1>';
+
+    dom += '<ul class="accordion" data-accordion>';
     $.each(tips, function(index, tip){
-      dom += '<li>' + CATEGORIES[tip.category_id].title + '</li>';
+      dom += '<li class="accordion-item" data-accordion-item>';
+      dom += '<a href="#panel' + index + '" class="accordion-title">';
+      dom += '<span class="badge">' + tip.length + '</span>';
+      dom += CATEGORIES[index].title + '</a>';
+      dom += '<div id="panel' + index + '" class="accordion-content" data-tab-content>';
+      dom += 'We could display the snippets here';
+      dom += '</div>';
+      dom += '</li>';
     });
     return dom + '</ul>';
   }
-
-  /*$("#myform").submit(function(event) {
-  event.preventDefault();
-  console.log($("#myta").val());
-  $.ajax({
-  url: "/action",
-  method: "POST",
-  data: $("#myta").val(),//only input
-  dataType: "json",
-  context: document.body
-}).done(function(data) {
-console.log(data)
-$(this).addClass("done");
-});
-
-});*/
 });
