@@ -68,18 +68,15 @@ $(document).ready(function() {
     }
   }
 
-  var key_timeout0;
-  var key_timeout1;
-
-  $('#text-base').keydown(function() {
-    clearTimeout(key_timeout0);
-    key_timeout0 = setTimeout(function(){asyncTranslate('#text-base');}, 500);
+  var key_timeout;
+  $('div[id^=text-]').on('input focus', function(event) {
+    clearTimeout(key_timeout);
+    key_timeout = setTimeout(function(){
+      asyncTranslate('#' + event.target.id);
+    }, 500);
   });
 
-  $('#text-falc').keydown(function() {
-    clearTimeout(key_timeout1);
-    key_timeout1 = setTimeout(function(){asyncTranslate('#text-falc');}, 500);
-  });
+
 
   function asyncTranslate(textarea){
     var text = $(textarea).text();
@@ -90,7 +87,7 @@ $(document).ready(function() {
       },
       type: 'POST',
       success: function(response){
-        update(response.text, response.tips);
+        update(textarea, response.text, response.tips);
       }
     });
   }
@@ -106,7 +103,7 @@ $(document).ready(function() {
       success: function(response){
         var summary = response.summary;
         var tips = response.tips;
-        update(summary, tips);
+        update('#text-falc', summary, tips);
       }
     });
   });
@@ -114,13 +111,12 @@ $(document).ready(function() {
   /**
    * throws the update to the laoyut
    */
-  function update(text, tips){
-    $('#text-falc').html(generateText(text, tips));
+  function update(textarea, text, tips){
+    $(textarea).html(generateText(text, tips));
     $('#warnings-summary').html(generateTips(tips));
 
-    // Update foundation elements
+    // Update foundation elements (like accordion)
     $(document).foundation();
-    console.log("foundation updated");
   }
 
 
@@ -191,8 +187,12 @@ $(document).ready(function() {
   }
 
   function generateTipsList(title, tips){
+    if(isEmpty(tips)){
+      return '';
+    }
+
     var dom = '';
-    dom += '<h1>' + title + '</h1>';
+    dom += '<h3>' + title + '</h3>';
 
     dom += '<ul class="accordion" data-accordion>';
     $.each(tips, function(index, tip){
@@ -206,5 +206,9 @@ $(document).ready(function() {
       dom += '</li>';
     });
     return dom + '</ul>';
+  }
+
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
   }
 });
