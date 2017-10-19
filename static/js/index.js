@@ -105,7 +105,7 @@ function update(textarea, text, tips){
  */
 function generateTextSpanBefore(index, tip, i){
   if(i == tip.start){
-    return '<span id="warning-' + index + '">';
+    return '<span id="tip-' + index + '">';
   }else{
     return '';
   }
@@ -200,7 +200,7 @@ function generateTipsByCategory(entry){
 
 function generateTip(tip){
   var html = '';
-  html += '<div class="tip-' + tip.index + '">' + tip.snippet + '</div>';
+  html += '<div class="tip" id="tip-' + tip.index + '">' + tip.snippet + '</div>';
   return html;
 }
 
@@ -215,37 +215,10 @@ $(document).ready(function() {
     document.execCommand("insertHTML", false, text);
   });
 
-  // $('body').on('mouseenter', 'span[id^=warning-]', function(e) {
-  //   var index = getCalloutIndex(this);
-  //   showCallout(index, true);
-  // });
-  //
-  // $('body').on('mousemove', 'span[id^=warning-]', function(e) {
-  //   var index = getCalloutIndex(this);
-  //   setWarningsPosition(e.pageX, e.pageY);
-  // });
-  //
-  // $('body').on('mouseleave', 'span[id^=warning-]', function(e) {
-  //   var index = getCalloutIndex(this);
-  //   showCallout(index, false);
-  // });
-  //
-  // function getCalloutIndex(callout){
-  //   return parseInt($(callout).attr("id").replace('warning-', ''), 10);
-  // }
+  $('#tips-container').on('mouseenter mouseleave', 'div[id^=tip-]', highlightTip);
 
-  function highlightTip(index, enters) {
-    // it also highlights the text
-    var callout = $("div[id=warning-" + index + "]");
-    var spans = $("span[id=warning-" + index + "]");
-
-    if (enters) {
-      callout.removeClass("hide");
-      spans.css('background-color', '#fdca40');
-    } else {
-      callout.addClass("hide");
-      spans.css('background-color', '#ffe18f');
-    }
+  function highlightTip(event) {
+    $("span#" + event.target.id).toggleClass('active');
   }
 
   var key_timeout;
