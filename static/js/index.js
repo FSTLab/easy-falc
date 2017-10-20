@@ -95,6 +95,9 @@ function update(textarea, text, tips){
   $(textarea).html(generateFormattedText(text, tips));
   $('#tips-container').html(generateTips(tips));
 
+  // update after T was updated
+  updateScore(tips);
+
   // Update foundation elements (like accordion)
   $(document).foundation();
 }
@@ -102,6 +105,25 @@ function update(textarea, text, tips){
 /*************************************\
 | ********** Generate HTML ********** |
 \*************************************/
+
+function updateScore(tips){
+  var ct = tips.length;
+  var cg = 0;
+  $(tips).each(function(k, tip){
+    if(CATEGORIES[tip.category_id].polarity == Categories.GOOD){
+      cg ++;
+    }
+  });
+  var p = cg/ct*100;
+  var pp = p +'%';
+  var r = cg < ct / 2 ? 255 : cg/ct*255;
+  var g = cg < ct / 2 ? 255-cg/ct*255 : 0;
+  var rgb = 'rgb('+ r + ', ' + g + ', 100)';
+  console.log(cg, ct);
+  console.log(rgb);
+  $('#score-percentage').html(pp);
+  $('#score-filler').css({width:pp, backgroundColor: rgb});
+}
 
 /**
  * Format util for the text containers
