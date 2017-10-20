@@ -30,7 +30,7 @@
 	// box-shadow: inset 0px 0px 5px 3px rgba(0,0,0,0.34);
 }
 
-span[id^="tip"] .active{
+div.active > span[id^="tip"] .active{
   background-color: #ffe18f;
 }
 

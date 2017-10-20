@@ -87,6 +87,9 @@ $('#button-summarize').click(function() {
  * throws the update to the laoyut
  */
 function update(textarea, text, tips){
+  $(ALL_TAS).removeClass('active');
+  $(textarea).addClass('active');
+
   TIPS = tips;
 
   $(textarea).html(generateFormattedText(text, tips));
@@ -204,6 +207,10 @@ function generateTip(tip){
   return html;
 }
 
+function highlightTip(event) {
+  $("span#" + event.target.id).toggleClass('active');
+}
+
 /*************************************\
 | ********* onDocumentReady ********* |
 \*************************************/
@@ -217,9 +224,6 @@ $(document).ready(function() {
 
   $('#tips-container').on('mouseenter mouseleave', 'div[id^=tip-]', highlightTip);
 
-  function highlightTip(event) {
-    $("span#" + event.target.id).toggleClass('active');
-  }
 
   var key_timeout;
   $('div[id^=text-]').on('input focus', function(event) {

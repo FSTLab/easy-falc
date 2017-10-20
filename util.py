@@ -185,8 +185,8 @@ def add_warning(warnings, m, comment, offset=0):
     warnings.append(Warning(index, start, end, comment, snippet))
 
 
-def create_tip(category_id, m):
-    start = m.start()
+def create_tip(category_id, m, offset=0):
+    start = m.start() + offset
     snippet = m.group()
     end = start + len(snippet) - 1
     return Tip(category_id, start, end, snippet)
@@ -229,7 +229,7 @@ def process(text):
                 r = '^{}$' .format(particle.regex)
                 for m in re.compile(r).finditer(word.text):
                     add_warning(warnings, m, particle.comment, word.position)
-                    tips.append(create_tip(int(particle.comment), m))
+                    tips.append(create_tip(int(particle.comment), m, word.position))
 
     # simplify(text, warnings)
     tips.append(Tip(1000, 0, 5, 'snippet sample'));
