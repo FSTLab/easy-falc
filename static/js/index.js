@@ -148,12 +148,17 @@ function updateScore(tips){
       cg ++;
     }
   });
-  var p = cg/ct*100;
+  drawScore(cg / ct);
+}
+
+function drawScore(ratio)
+{
+  var p = ratio * 100;
   var pp = p +'%';
-  var r = cg < ct / 2 ? 255 : cg/ct*255;
-  var g = cg < ct / 2 ? 255-cg/ct*255 : 0;
+  var r = ratio > 0.5 ? 510 - (ratio * 2 * 255) : 255;
+  var g = ratio > 0.5 ? 255 : ratio * 2 * 255;
   var rgb = 'rgb('+ r + ', ' + g + ', 100)';
-  console.log(cg, ct);
+  console.log(ratio);
   console.log(rgb);
   $('#score-percentage').html(pp);
   $('#score-filler').css({width:pp, backgroundColor: rgb});
@@ -227,7 +232,6 @@ function generateTips(tips){
 }
 
 function generateTipsByPolarity(title, tips_by_polarity){
-  console.log(tips_by_polarity);
   if(isEmpty(tips_by_polarity)){
     return '';
   }
