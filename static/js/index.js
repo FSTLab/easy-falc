@@ -237,7 +237,8 @@ function generateTipsByPolarity(title, tips_by_polarity){
   }
 
   var html = '';
-  html += '<h3>' + title + '</h3>';
+  html += '<hr />';
+  html += '<p>' + title + '</p>';
   html += '<ul class="accordion" data-accordion>';
   html += Object.entries(tips_by_polarity).map(entry => generateTipsByCategory(entry)).join('');
   html += '</ul>';
