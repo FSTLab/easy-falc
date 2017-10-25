@@ -1,0 +1,34 @@
+{
+  "particles": [
+    {
+      "category_id": 1001,
+      "regex": ".{3,9}",
+      "type": "word"
+    },
+    {
+      "category_id": 4000,
+      "regex": "\\s*\\S+(?:\\s+\\S+){12,}\\s*",
+      "type": "sent"
+    },
+    {
+      "category_id": 4001,
+      "regex": "n(\\'|e$)",
+      "type": "word"
+    },
+    {
+      "category_id": 4002,
+      "regex": "[;:\\(\\)\\[\\]\\*]",
+      "type": "char"
+    },
+    {
+      "category_id": 4003,
+      "regex": "[A-Z][A-Z.]{2,}",
+      "type": "word"
+    },
+    {
+      "category_id": 4004,
+      "regex": ".{10,}",
+      "type": "word"
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import codecs
 from summarize import summarize as pysummarize
 import os
 from polyglot.text import Text
-
+from importlib import import_module
 
 ###############################################################################
 #                                 Classes                                     #
@@ -17,26 +17,6 @@ class Word:
         """Word constructor."""
         self.text = text
         self.position = position
-
-
-class Particle:
-    """
-    Describes a particle you should avoid and its mitigation.
-
-    A particle is something that should be avoided in a FALC text. It can be
-    specific punctuation, words or verb endings. The type WORD can also be used
-    with regexes, in order to match some specific pattern, length in a word.
-    """
-
-    TYPE_PUNC = 'punc'     # character of punctuation
-    TYPE_WORD = 'word'     # word/chars in text
-    TYPE_ENDI = 'endi'     # terminaison (verb)
-
-    def __init__(self, regex, comment, type):
-        """Particle constructor."""
-        self.regex = regex
-        self.comment = comment
-        self.type = type
 
 
 class Warning:
@@ -101,15 +81,34 @@ class Tip:
         }
 
 
+class Falc:
+    DIRECTORY_MODULES = 'falc-modules'
+
+    def __init__(self):
+        self.modules = self.init_modules()
+
+
+    def init_modules(self):
+        modules = []
+        for f in os.listdir(Falc.DIRECTORY_MODULES):
+            if f.startswith('m_') and f.endswith('.py'):
+                path = "%s.%s" % (Falc.DIRECTORY_MODULES, os.path.splitext(f)[0])
+                modules.append(import_module(path))
+        return modules
+
+    def process(self, text):
+        tips = []
+        for module in self.modules:
+            tips += module.process(text)
+        return tips
+
+
 ###############################################################################
 #                                 Statics                                     #
 ###############################################################################
 # Regex of what made a word
-R_WORDS = u'[a-zàâçéèêëîïôûùüÿñæœ\-]+\'*(?i)'
 # Regex for the text format
 R_SPAN = u'(<\/*span[^>]*>|<\/*p>)'
-# Regex of a sentence
-R_SENTENCE = u'[^.?!]+'
 
 WARNING_SENTENCE_TOO_LONG = "Faites des phrases courtes."
 
@@ -117,7 +116,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 PATH_LEX = PATH +'/dict/lexique-dicollecte-fr-v6.0.2/lexique-dicollecte-fr-v6.0.2.txt'
 PATH_DICT = PATH + '/dict/particles.txt'
 
-# Categories TODO reflect about JSON ?
+# Categories
 C_FREQUENT_WORD = 1000
 C_SHORT_WORD = 1001
 
@@ -143,22 +142,6 @@ CATEGORIES = {
     C_LONG_WORD : Category(Category.BAD, "Mot trop long")
 }
 
-# Read particles from external file. File is written as follow:
-#
-# - 3 lines per particle
-# - first line is the regex
-# - second line is the warning text
-# - third line is the type (punc, word, endi)
-PARTICLES = []
-with codecs.open(PATH_DICT, encoding='utf8') as f:
-    lines = f.read().splitlines()
-    for i in range(0, len(lines), 3):
-        regex = lines[i]
-        comment = lines[i + 1]
-        type = lines[i + 2]
-        particle = Particle(regex, comment, type)
-        PARTICLES.append(particle)
-
 
 def clean(text):
     """Clean text from html formatting."""
@@ -169,72 +152,8 @@ def get_categories():
     return CATEGORIES
 
 
-def add_warning(warnings, m, comment, offset=0):
-    """
-    Create a Warning object, given the following parameters.
-
-    :param warnings:    The list of warning where you want the new to be added.
-    :param m:           The regex iterator of MatchObject
-    :param particle:    The particle
-    :param offset:      Offset, if you are not looping through the whole text.
-    """
-    index = len(warnings)
-    start = m.start() + offset
-    snippet = m.group()
-    end = start + len(snippet) - 1
-    warnings.append(Warning(index, start, end, comment, snippet))
-
-
-def create_tip(category_id, m, offset=0):
-    start = m.start() + offset
-    snippet = m.group()
-    end = start + len(snippet) - 1
-    return Tip(category_id, start, end, snippet)
-
 def summarize(text):
     return pysummarize(text, language='french', sentence_count=2)
-
-def process(text):
-    """
-    Process the text in order to get the differents warnings.
-
-    :return warnings:   list of found warnings
-    """
-    words = []
-    warnings = []
-    tips = []
-
-    # Check sentence length
-    for m in re.compile(R_SENTENCE).finditer(text):
-        if len(m.group().split(' ')) > 12:
-            add_warning(warnings, m, WARNING_SENTENCE_TOO_LONG)
-            tips.append(create_tip(C_SENTENCE_TOO_LONG, m))
-
-    # Check punctutation particles
-    for particle in PARTICLES:
-        if particle.type == Particle.TYPE_PUNC:
-            for m in re.compile(particle.regex).finditer(text):
-                add_warning(warnings, m, particle.comment)
-                tips.append(create_tip(C_COMPLEX_PUNCTUATION, m))
-
-    # Split text to words
-    for m in re.compile(R_WORDS).finditer(text):
-        words.append(Word(m.group(), m.start()))
-
-    # Check word particles
-    for word in words:
-        for particle in PARTICLES:
-            if particle.type == Particle.TYPE_WORD:
-                # from the start to the end of the word
-                r = '^{}$' .format(particle.regex)
-                for m in re.compile(r).finditer(word.text):
-                    add_warning(warnings, m, particle.comment, word.position)
-                    tips.append(create_tip(int(particle.comment), m, word.position))
-
-    # simplify(text, warnings)
-    tips.append(Tip(1000, 0, 5, 'snippet sample'));
-    tips.append(Tip(3000, 7, 9, 'snippet sample'));
-    return tips
 
 
 word_freq = {}

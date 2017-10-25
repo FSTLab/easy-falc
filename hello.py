@@ -5,16 +5,18 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from flask import jsonify
-import util
 from lxml import html
+
+import falcore
+
 app = Flask(__name__)
-util.init_thesaurus()
+falcore.init_thesaurus()
 
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
 DATABASE = 'dictionaries.db'
-
+FALC = falcore.Falc()
 
 ##############################################
 #                  Database                  #
@@ -60,9 +62,8 @@ def index():
     Index page.
     """
 
-    categories = util.get_categories()
+    categories = falcore.get_categories()
     categories = {key: value.serialize() for key, value in categories.items()}
-    print(categories)
     return render_template('index.html.j2', categories=categories, css='index', js='index')
 
 
@@ -72,7 +73,7 @@ def translate():
     This translates.
     """
     text = request.form['text']
-    tips = util.process(text)
+    tips = FALC.process(text)
     return jsonify(text=text, tips=[t.serialize() for t in tips])
 
 @app.route('/summarize', methods=['POST'])
@@ -81,6 +82,6 @@ def summarize():
     Summarize text.
     """
     text = request.form['text']
-    summary = util.summarize(text)
-    tips = util.process(summary)
+    summary = falcore.summarize(text)
+    tips = FALC.process(summary)
     return jsonify(summary=summary, tips=[t.serialize() for t in tips])
