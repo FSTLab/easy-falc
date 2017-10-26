@@ -6,6 +6,7 @@ import os
 ##############################
 #          STATICS           #
 ##############################
+
 R_SENTENCE = u'[^.?!]+'
 R_WORDS = u'[a-zàâçéèêëîïôûùüÿñæœ\-]+\'*(?i)'
 
@@ -13,17 +14,16 @@ DIR_SCRIPT = os.path.dirname(__file__)
 PATH_REL = 'res/particles.json'
 PATH_ABS = os.path.join(DIR_SCRIPT, PATH_REL)
 
+
 with open(PATH_ABS) as datas:
     particles = json.load(datas)['particles']
 
 
 def process(text):
-    tips = []
-    tips += process_all(text)
-    tips += process_sent(text)
-    tips += process_word(text)
-    tips += process_char(text)
-    return tips
+    return [process_all(text)
+         + process_sentences(text)
+         + process_word(text)
+         + process_character(text)]
 
 
 def process_all(text):
@@ -33,7 +33,8 @@ def process_all(text):
             t.append(create_tip(particle['category_id'], m))
     return t
 
-def process_sent(text):
+
+def process_sentences(text):
     t = []
     for sentence in re.compile(R_SENTENCE).finditer(text):
         offset = sentence.start()
@@ -50,7 +51,7 @@ def process_word(text):
                 t.append(create_tip(int(particle['category_id']), m, word.start()))
     return t
 
-def process_char(text):
+def process_character(text):
     t = []
     for particle in particles_generator('char'):
         for m in re.compile(particle['regex']).finditer(text):

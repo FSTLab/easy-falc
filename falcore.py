@@ -10,43 +10,6 @@ from importlib import import_module
 ###############################################################################
 #                                 Classes                                     #
 ###############################################################################
-class Word:
-    """The word and the position of its first character in the whole text."""
-
-    def __init__(self, text, position):
-        """Word constructor."""
-        self.text = text
-        self.position = position
-
-
-class Warning:
-    """
-    A warning is used to inform the user about what he did wrong.
-
-    :param index: Unique id
-    :param start: Start position in the text
-    :param end: End position in the text
-    :param comment: Litteraly what the error is, will be displayed to user
-    :param snippet: What caused the error, which part of the text
-    """
-
-    def __init__(self, index, start, end, comment, snippet):
-        """Warning constructor."""
-        self.index = index
-        self.start = start
-        self.end = end
-        self.comment = comment
-        self.snippet = snippet
-
-    def serialize(self):
-        return {
-            'index': self.index,
-            'start': self.start,
-            'end': self.end,
-            'comment': self.comment,
-            'snippet': self.snippet,
-        }
-
 class Category:
     # Polarities
     BAD = 0
@@ -81,6 +44,8 @@ class Tip:
         }
 
 
+
+
 class Falc:
     DIRECTORY_MODULES = 'falc-modules'
 
@@ -93,7 +58,10 @@ class Falc:
         for f in os.listdir(Falc.DIRECTORY_MODULES):
             if f.startswith('m_') and f.endswith('.py'):
                 path = "%s.%s" % (Falc.DIRECTORY_MODULES, os.path.splitext(f)[0])
-                modules.append(import_module(path))
+                module = import_module(path)
+                if 'process' in dir(module):
+                    modules.append(module)
+                    print("Add module: {}".format(module))
         return modules
 
     def process(self, text):
