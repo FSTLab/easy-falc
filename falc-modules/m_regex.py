@@ -1,3 +1,9 @@
+"""
+This class is a FALC module. FALC modules MUST implement process method to be
+used.
+
+It can
+"""
 from falcore import Tip
 import json
 import re
@@ -14,16 +20,16 @@ DIR_SCRIPT = os.path.dirname(__file__)
 PATH_REL = 'res/particles.json'
 PATH_ABS = os.path.join(DIR_SCRIPT, PATH_REL)
 
+PARTICLES = []
 
-with open(PATH_ABS) as datas:
-    particles = json.load(datas)['particles']
+
+def init():
+    with open(PATH_ABS) as datas:
+        PARTICLES = json.load(datas)['particles']
 
 
 def process(text):
-    return [process_all(text)
-         + process_sentences(text)
-         + process_word(text)
-         + process_character(text)]
+    return process_all(text) + process_sentences(text) + process_word(text) + process_character(text)
 
 
 def process_all(text):
@@ -70,4 +76,4 @@ def create_tip(category_id, m, offset=0):
 
 
 def particles_generator(particle_type):
-    return (particle for particle in particles if particle['type'] == particle_type)
+    return (particle for particle in PARTICLES if particle['type'] == particle_type)

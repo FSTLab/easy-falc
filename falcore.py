@@ -49,8 +49,13 @@ class Tip:
 class Falc:
     DIRECTORY_MODULES = 'falc-modules'
 
+    MSG_INIT = "# init module: {}: {}"
+    MSG_ADD = "# add module: {}"
+
     def __init__(self):
+        print("\n# init falc core")
         self.modules = self.init_modules()
+        print("\n")
 
 
     def init_modules(self):
@@ -59,9 +64,15 @@ class Falc:
             if f.startswith('m_') and f.endswith('.py'):
                 path = "%s.%s" % (Falc.DIRECTORY_MODULES, os.path.splitext(f)[0])
                 module = import_module(path)
+                m_name = module.__name__
                 if 'process' in dir(module):
+                    try:
+                        module.init()
+                        print(Falc.MSG_INIT.format(m_name, "OK"))
+                    except AttributeError:
+                        print(Falc.MSG_INIT.format(m_name, "Not Found"))
                     modules.append(module)
-                    print("Add module: {}".format(module))
+                    print(Falc.MSG_ADD.format(m_name))
         return modules
 
     def process(self, text):
