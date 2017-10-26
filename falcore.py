@@ -47,7 +47,7 @@ class Tip:
 
 
 class Falc:
-    DIRECTORY_MODULES = 'falc-modules'
+    DIR_MODULES = 'falc-modules'
 
     MSG_INIT = "# init module: {}: {}"
     MSG_ADD = "# add module: {}"
@@ -60,9 +60,12 @@ class Falc:
 
     def init_modules(self):
         modules = []
-        for f in os.listdir(Falc.DIRECTORY_MODULES):
+        here = os.path.dirname(os.path.abspath(__file__))
+        directory_modules = os.path.join(here, Falc.DIR_MODULES)
+
+        for f in os.listdir(directory_modules):
             if f.startswith('m_') and f.endswith('.py'):
-                path = "%s.%s" % (Falc.DIRECTORY_MODULES, os.path.splitext(f)[0])
+                path = "%s.%s" % (Falc.DIR_MODULES, os.path.splitext(f)[0])
                 module = import_module(path)
                 m_name = module.__name__
                 if 'process' in dir(module):
