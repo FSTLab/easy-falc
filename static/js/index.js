@@ -124,8 +124,9 @@ function update(textarea, text, tips){
 
   TIPS = tips;
 
+  var formattedText = generateFormattedText(text, tips);
   var restore = saveCaretPosition($(textarea)[0]);
-  $(textarea).html(generateFormattedText(text, tips));
+  $(textarea).html(formattedText);
   restore();
   $('#tips-container').html(generateTips(tips));
 
