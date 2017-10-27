@@ -1,12 +1,8 @@
 import sqlite3
 
-DATABASE = 'dictionaries.db'
-
+# DATABASE = 'dictionaries.db'
+# db = sqlite3.connect(DATABASE)
 
 
 def process(text):
     return []
-
-
-if __name__ == '__main__':
-    print("main called")

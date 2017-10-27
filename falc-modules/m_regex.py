@@ -22,8 +22,12 @@ PATH_ABS = os.path.join(DIR_SCRIPT, PATH_REL)
 
 PARTICLES = []
 
+##############################
+#       Module Methods       #
+##############################
 
 def init():
+    global PARTICLES
     with open(PATH_ABS) as datas:
         PARTICLES = json.load(datas)['particles']
 
@@ -32,6 +36,9 @@ def process(text):
     return process_all(text) + process_sentences(text) + process_word(text) + process_character(text)
 
 
+##############################
+#      Private Methods       #
+##############################
 def process_all(text):
     t = []
     for particle in particles_generator('all'):
@@ -66,7 +73,7 @@ def process_character(text):
 
 
 ##############################
-#          UTILS             #
+#          Utils             #
 ##############################
 def create_tip(category_id, m, offset=0):
     start = m.start() + offset
