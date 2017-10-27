@@ -1,4 +1,6 @@
 """
+Regex module
+
 This class is a FALC module. FALC modules MUST implement process method to be
 used.
 
@@ -10,7 +12,7 @@ import re
 import os
 
 ##############################
-#          STATICS           #
+#          Globals           #
 ##############################
 
 R_SENTENCE = u'[^.?!]+'
