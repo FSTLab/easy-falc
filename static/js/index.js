@@ -55,11 +55,13 @@ function saveCaretPosition(context){
     var range = selection.getRangeAt(0);
     range.setStart(  context, 0 );
     var len = range.toString().length;
+    console.log("CARET | save at : " + len);
 
     return function restore(){
         var pos = getTextNodeAtPosition(context, len);
         selection.removeAllRanges();
         var range = new Range();
+        console.log("CARET | create at : " + pos.position);
         range.setStart(pos.node ,pos.position);
         selection.addRange(range);
     };
@@ -159,8 +161,6 @@ function drawScore(ratio)
   var r = ratio > 0.5 ? 510 - (ratio * 2 * 255) : 255;
   var g = ratio > 0.5 ? 255 : ratio * 2 * 255;
   var rgb = 'rgb('+ r + ', ' + g + ', 30)';
-  console.log(ratio);
-  console.log(rgb);
   $('#score-percentage').html(pp);
   $('#score-filler').css({width:pp, backgroundColor: rgb});
 }
