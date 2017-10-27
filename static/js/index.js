@@ -154,10 +154,10 @@ function updateScore(tips){
 function drawScore(ratio)
 {
   var p = ratio * 100;
-  var pp = p +'%';
+  var pp = Math.round(p) +'%';
   var r = ratio > 0.5 ? 510 - (ratio * 2 * 255) : 255;
   var g = ratio > 0.5 ? 255 : ratio * 2 * 255;
-  var rgb = 'rgb('+ r + ', ' + g + ', 100)';
+  var rgb = 'rgb('+ r + ', ' + g + ', 30)';
   console.log(ratio);
   console.log(rgb);
   $('#score-percentage').html(pp);

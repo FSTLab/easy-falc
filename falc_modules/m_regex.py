@@ -84,3 +84,7 @@ def create_tip(category_id, m, offset=0):
 
 def particles_generator(particle_type):
     return (particle for particle in PARTICLES if particle['type'] == particle_type)
+
+
+def get_words(text):
+    return [word for word in re.compile(R_WORDS).finditer(text)]

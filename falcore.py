@@ -47,13 +47,13 @@ class Tip:
 
 
 class Falc:
-    DIR_MODULES = 'falc-modules'
+    DIR_MODULES = 'falc_modules'
 
-    MSG_INIT = "# init module: {}: {}"
-    MSG_ADD = "# add module: {}"
+    MSG_PROCESS = "## Processing module: {}"
+    MSG_ADD = "### add: {}"
 
     def __init__(self):
-        print("\n# init falc core")
+        print("\n# Initialize FALC core")
         self.modules = self.init_modules()
         print("\n")
 
@@ -68,14 +68,16 @@ class Falc:
                 path = "%s.%s" % (Falc.DIR_MODULES, os.path.splitext(f)[0])
                 module = import_module(path)
                 m_name = module.__name__
+                print(Falc.MSG_PROCESS.format(m_name))
                 if 'process' in dir(module):
                     try:
                         module.init()
-                        print(Falc.MSG_INIT.format(m_name, "OK"))
                     except AttributeError:
-                        print(Falc.MSG_INIT.format(m_name, "Not Found"))
+                        pass
                     modules.append(module)
-                    print(Falc.MSG_ADD.format(m_name))
+                    print(Falc.MSG_ADD.format("Success"))
+                else:
+                    print(Falc.MSG_ADD.format("No process() method, not adding"))
         return modules
 
     def process(self, text):
