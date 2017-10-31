@@ -44,6 +44,8 @@ class Tip:
         }
 
 
+    def __str__(self):
+        return "%s(%r)" % (self.__class__, self.__dict__)
 
 
 class Falc:
@@ -102,7 +104,7 @@ PATH_DICT = PATH + '/dict/particles.txt'
 
 # Categories
 C_FREQUENT_WORD = 1000
-C_SHORT_WORD = 1001
+C_EASY_WORD = 1001
 
 C_REMOVE_NOT_ESSENTIAL = 3000
 
@@ -115,7 +117,7 @@ C_COMPLEX_WORD = 4005
 
 CATEGORIES = {
     C_FREQUENT_WORD : Category(Category.GOOD, "Mot courant"),
-    C_SHORT_WORD : Category(Category.GOOD, "Mot court"),
+    C_EASY_WORD : Category(Category.GOOD, "Mot facile (court et fréquent)"),
 
     C_REMOVE_NOT_ESSENTIAL : Category(Category.ADVICE, "Supprimer les phrases qui ne sont pas indispensables à la compréhension"),
 
@@ -123,7 +125,8 @@ CATEGORIES = {
     C_NEGATION : Category(Category.BAD, "Utilise des négations"),
     C_COMPLEX_PUNCTUATION : Category(Category.BAD, "Caractère à éviter, utiliser une ponctuation simple"),
     C_ACRONYMS : Category(Category.BAD, "Utilise des sigles et acronymes"),
-    C_LONG_WORD : Category(Category.BAD, "Mot trop long")
+    C_LONG_WORD : Category(Category.BAD, "Mot trop long"),
+    C_COMPLEX_WORD : Category(Category.BAD, "Mot trop compliqué")
 }
 
 

@@ -55,14 +55,12 @@ function saveCaretPosition(context){
     var range = selection.getRangeAt(0);
     range.setStart(  context, 0 );
     var len = range.toString().length;
-    console.log("CARET | save at : " + len);
 
     return function restore(){
         var pos = getTextNodeAtPosition(context, len);
         selection.removeAllRanges();
         var range = new Range();
-        console.log("CARET | create at : " + pos.position);
-        range.setStart(pos.node ,pos.position);
+        range.setStart(pos.node, pos.position);
         selection.addRange(range);
     };
 }
@@ -79,6 +77,7 @@ function getTextNodeAtPosition(root, index){
         return NodeFilter.FILTER_ACCEPT;
     });
     var c = treeWalker.nextNode();
+    console.log("position: " + index);
     return {
         node: c? c: root,
         position: c? index:  0
@@ -226,13 +225,13 @@ function generateTips(tips){
   T = t;
 
   var html = '';
-  html += generateTipsByPolarity('Améliorations possibles', t[Categories.BAD]);
-  html += generateTipsByPolarity('Conseils', t[Categories.ADVICE]);
-  html += generateTipsByPolarity('Bonnes pratiques', t[Categories.GOOD]);
+  html += generateTipsByPolarity('Améliorations possibles', 'bad', t[Categories.BAD]);
+  html += generateTipsByPolarity('Conseils', 'advice', t[Categories.ADVICE]);
+  html += generateTipsByPolarity('Bonnes pratiques', 'good', t[Categories.GOOD]);
   return html;
 }
 
-function generateTipsByPolarity(title, tips_by_polarity){
+function generateTipsByPolarity(title, cl, tips_by_polarity){
   if(isEmpty(tips_by_polarity)){
     return '';
   }
@@ -240,7 +239,7 @@ function generateTipsByPolarity(title, tips_by_polarity){
   var html = '';
   html += '<hr />';
   html += '<p>' + title + '</p>';
-  html += '<ul class="accordion" data-accordion>';
+  html += '<ul class="accordion ' + cl + '" data-accordion>';
   html += Object.entries(tips_by_polarity).map(entry => generateTipsByCategory(entry)).join('');
   html += '</ul>';
 

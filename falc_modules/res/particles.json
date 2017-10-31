@@ -1,11 +1,6 @@
 {
   "particles": [
     {
-      "category_id": 1001,
-      "regex": "^.{3,9}$",
-      "type": "word"
-    },
-    {
       "category_id": 4000,
       "regex": "\\s*\\S+(?:\\s+\\S+){12,}\\s*",
       "type": "sent"

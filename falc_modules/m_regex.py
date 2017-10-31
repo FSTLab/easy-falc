@@ -75,7 +75,7 @@ def process_character(text):
 
 
 ##############################
-#          Utils             #
+#      Utils : private       #
 ##############################
 def create_tip(category_id, m, offset=0):
     start = m.start() + offset
@@ -88,5 +88,12 @@ def particles_generator(particle_type):
     return (particle for particle in PARTICLES if particle['type'] == particle_type)
 
 
+##############################
+#      Utils : public        #
+##############################
 def get_words(text):
     return [word for word in re.compile(R_WORDS).finditer(text)]
+
+def is_short(word):
+    regex_short = re.compile('^.{3,9}$')
+    return regex_short.match(word)
