@@ -32,6 +32,21 @@ var lastEditedTextarea = TA_BASE;
 | ************** UTILS ************** |
 \*************************************/
 
+function getTipPolarity(tip){
+  return CATEGORIES[tip.category_id].polarity;
+}
+
+function getPolarityText(polarity){
+  switch(polarity){
+    case Categories.BAD:
+      return "bad";
+    case Categories.ADVICE:
+      return "advice";
+    case Categories.GOOD:
+      return "good";
+  }
+}
+
 /**
  * Save the categories.
  *
@@ -146,7 +161,7 @@ function updateScore(tips){
   var ct = tips.length;
   var cg = 0;
   $(tips).each(function(k, tip){
-    if(CATEGORIES[tip.category_id].polarity == Categories.GOOD){
+    if(getTipPolarity(tip) == Categories.GOOD){
       cg ++;
     }
   });
@@ -169,7 +184,7 @@ function drawScore(ratio)
  */
 function generateTextSpanBefore(index, tip, i){
   if(i == tip.start){
-    return '<span id="tip-' + index + '">';
+    return '<span id="tip-' + index + '" class="' + getPolarityText(getTipPolarity(tip)) + '">';
   }else{
     return '';
   }

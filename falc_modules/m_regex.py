@@ -16,7 +16,10 @@ import os
 ##############################
 
 R_SENTENCE = u'[^.?!]+'
-R_WORDS = u'[a-zàâçéèêëîïôûùüÿñæœ\-]+\'*(?i)'
+R_WORDS = u'[A-ZÀÂÇÉÈÊËÎÏÔÛÙÜŸÑÆŒ]?[a-zàâçéèêëîïôûùüÿñæœ\-]+\'*(?i)'
+
+R_WORD_SHORT = '^.{3,9}$'
+R_WORD_LONG = '^.{10,}$'
 
 DIR_SCRIPT = os.path.dirname(__file__)
 PATH_REL = 'res/particles.json'
@@ -95,5 +98,7 @@ def get_words(text):
     return [word for word in re.compile(R_WORDS).finditer(text)]
 
 def is_short(word):
-    regex_short = re.compile('^.{3,9}$')
-    return regex_short.match(word)
+    return re.compile(R_WORD_SHORT).match(word)
+
+def is_long(word):
+    return re.compile(R_WORD_LONG).match(word)

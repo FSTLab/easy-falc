@@ -9,7 +9,8 @@ It can
 import sqlite3
 import os
 import falcore
-from falc_modules.m_regex import get_words, create_tip, is_short
+import falc_modules.m_regex as m_regex
+from falc_modules.m_regex import create_tip
 
 ##############################
 #          Globals           #
@@ -29,17 +30,17 @@ FREQUENT_WORDS_COUNT = 1000
 
 # Utils
 RULES = {}
-ponderation_min = 0.0
+PONDERATION_MIN = 0.0
 
 ##############################
 #       Module Methods       #
 ##############################
 
 def init():
-    global ponderation_min
+    global PONDERATION_MIN
     cursor.execute("SELECT ponderation FROM Mots WHERE fk_dictionnaires=1 ORDER BY ponderation DESC LIMIT 1 OFFSET {}".format(FREQUENT_WORDS_COUNT))
-    ponderation_min = float(cursor.fetchone()[0])
-    print("### ponderation_min={}".format(ponderation_min))
+    PONDERATION_MIN = float(cursor.fetchone()[0])
+    print("### PONDERATION_MIN={}".format(PONDERATION_MIN))
 
     global RULES
     RULES['word'] = [
@@ -48,7 +49,7 @@ def init():
 
 def process(text):
     tips = []
-    for word in get_words(text):
+    for word in m_regex.get_words(text):
         for rule in RULES['word']:
             tips += rule(word)
     return tips
@@ -60,11 +61,54 @@ def rule_word_complexity(word):
     """
     In order to be considered easy, a word has to be frequent and short.
     """
-    for row in cursor.execute("SELECT ponderation FROM Mots WHERE mot=\"{}\"".format(word.group())):
-        ponderation = float(row[0])
-        print("# process {} [p={}]".format(word.group(), ponderation))
-        if ponderation < ponderation_min:
-            return [create_tip(falcore.C_COMPLEX_WORD, word)]
-        elif is_short(word.group()):
-            return [create_tip(falcore.C_EASY_WORD, word)]
-    return []
+    tips = []
+
+    word_text = word.group().lower()
+    print("- word: {}".format(word_text))
+
+    sql = "SELECT * FROM Mots WHERE fk_dictionnaires=1 AND mot=\"{}\"".format(word_text)
+    word_db = cursor.execute(sql).fetchone()
+    if word_db:
+        print("  - db: {}".format(word_db))
+        ponderation = float(word_db[3])
+
+        is_frequent = ponderation > PONDERATION_MIN
+        is_short = True if m_regex.is_short(word_text) else False
+        is_long = True if m_regex.is_long(word_text) else False
+
+        print("  - is_frequent: {}".format(is_frequent))
+        print("  - is_short: {}".format(is_short))
+        print("  - is_long: {}".format(is_long))
+
+        if is_frequent and is_short:
+            tips += [create_tip(falcore.C_EASY_WORD, word)]
+        elif is_frequent and is_long:
+            tips += [create_tip(falcore.C_LONG_WORD, word)]
+        elif not is_frequent and is_long:
+            tips += [create_tip(falcore.C_COMPLEX_WORD, word)]
+
+        if is_multisemic(word_db):
+            tips += [create_tip(falcore.C_MULTISEMIC_WORD, word)]
+    else:
+        # avoid abréviations
+        if '\'' not in word_text:
+            tips += [create_tip(falcore.C_NOT_IN_DICTIONARY, word)]
+
+    return tips
+
+##############################
+#           Utils            #
+##############################
+def is_multisemic(word_db):
+
+    # word has no defintion
+    if word_db[6] is None:
+        return False
+
+    # get definition
+    tmp_cursor = db.cursor()
+    tmp_cursor.execute("SELECT definition FROM Definitions WHERE numero = {}".format(word_db[6]))
+    one = tmp_cursor.fetchone()
+
+    # TODO check if definition is multiple or not
+    return False

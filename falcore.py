@@ -83,6 +83,7 @@ class Falc:
         return modules
 
     def process(self, text):
+        print("\n### New text received ###")
         tips = []
         for module in self.modules:
             tips += module.process(text)
@@ -107,6 +108,7 @@ C_FREQUENT_WORD = 1000
 C_EASY_WORD = 1001
 
 C_REMOVE_NOT_ESSENTIAL = 3000
+C_NOT_IN_DICTIONARY = 3001
 
 C_SENTENCE_TOO_LONG = 4000
 C_NEGATION = 4001
@@ -120,6 +122,7 @@ CATEGORIES = {
     C_EASY_WORD : Category(Category.GOOD, "Mot facile (court et fréquent)"),
 
     C_REMOVE_NOT_ESSENTIAL : Category(Category.ADVICE, "Supprimer les phrases qui ne sont pas indispensables à la compréhension"),
+    C_NOT_IN_DICTIONARY : Category(Category.ADVICE, "Ce mot est inconnu de notre dictionnaire."),
 
     C_SENTENCE_TOO_LONG : Category(Category.BAD, "Phrase trop longue"),
     C_NEGATION : Category(Category.BAD, "Utilise des négations"),

@@ -1,15 +1,15 @@
 @import 'variables';
 
 .accordion.bad .accordion-title{
-  background-color: #ff9b9b;
+  background-color: $tips-bad;
 }
 
 .accordion.advice .accordion-title{
-  backgorund-color: #ffe18f;
+  backgorund-color: $tips-advice;
 }
 
 .accordion.good .accordion-title{
-  background-color: #9bff9b;
+  background-color: $tips-good;
 }
 
 .score-container{
@@ -44,7 +44,16 @@
 }
 
 div.active span[id^="tip"].active{
-  background-color: #ffe18f;
+
+  &.good{
+    background-color: $tips-good;
+  }
+  &.advice{
+    background-color: $tips-advice;
+  }
+  &.bad{
+    background-color: $tips-bad;
+  }
 }
 
 #banner {

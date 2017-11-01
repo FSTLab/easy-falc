@@ -19,11 +19,6 @@
       "category_id": 4003,
       "regex": "^[A-Z][A-Z.]{2,}$",
       "type": "word"
-    },
-    {
-      "category_id": 4004,
-      "regex": "^.{10,}$",
-      "type": "word"
     }
   ]
 }
