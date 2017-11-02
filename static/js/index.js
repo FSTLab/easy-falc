@@ -27,6 +27,8 @@ var ALL_TAS = TEXTAREAS.join(',');
 
 var lastEditedTextarea = TA_BASE;
 
+var lastXhrRequest = null;
+
 
 /*************************************\
 | ************** UTILS ************** |
@@ -68,16 +70,17 @@ function isEmpty(obj) {
 function saveCaretPosition(context){
     var selection = window.getSelection();
     var range = selection.getRangeAt(0);
-    range.setStart(  context, 0 );
-    var len = range.toString().length;
+    range.setStart(  $(context)[0], 0 );
+    return range.toString().length;
+}
 
-    return function restore(){
-        var pos = getTextNodeAtPosition(context, len);
-        selection.removeAllRanges();
-        var range = new Range();
-        range.setStart(pos.node, pos.position);
-        selection.addRange(range);
-    };
+function restoreCaretPosition(context, caretPos)
+{
+    var pos = getTextNodeAtPosition($(context)[0], caretPos);
+    window.getSelection().removeAllRanges();
+    var range = new Range();
+    range.setStart(pos.node, pos.position);
+    window.getSelection().addRange(range);
 }
 
 function getTextNodeAtPosition(root, index){
@@ -105,7 +108,7 @@ function getTextNodeAtPosition(root, index){
 
 function asyncTranslate(textarea){
   var text = $(textarea).text();
-  $.ajax({
+  lastXhrRequest = $.ajax({
     url: '/translate',
     data: {
       'text': text
@@ -140,10 +143,10 @@ function update(textarea, text, tips){
 
   TIPS = tips;
 
-  var formattedText = generateFormattedText(text, tips);
-  var restore = saveCaretPosition($(textarea)[0]);
-  $(textarea).html(formattedText);
-  restore();
+  var caretPos = saveCaretPosition(textarea);
+  $(textarea).html(generateFormattedText(text, tips));
+  restoreCaretPosition(textarea, caretPos);
+
   $('#tips-container').html(generateTips(tips));
 
   // update after T was updated
@@ -254,7 +257,7 @@ function generateTipsByPolarity(title, cl, tips_by_polarity){
   var html = '';
   html += '<hr />';
   html += '<p>' + title + '</p>';
-  html += '<ul class="accordion ' + cl + '" data-accordion>';
+  html += '<ul class="accordion ' + cl + '" data-accordion data-multi-expand="true" data-allow-all-closed="true">';
   html += Object.entries(tips_by_polarity).map(entry => generateTipsByCategory(entry)).join('');
   html += '</ul>';
 
@@ -303,6 +306,11 @@ $(document).ready(function() {
 
   var key_timeout;
   $('div[id^=text-]').on('input focus', function(event) {
+
+    if(lastXhrRequest != null){
+      lastXhrRequest.abort();
+    }
+
     clearTimeout(key_timeout);
     key_timeout = setTimeout(function(){
       asyncTranslate('#' + event.target.id);

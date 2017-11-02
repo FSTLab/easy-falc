@@ -82,10 +82,13 @@ def rule_word_complexity(word):
 
         if is_frequent and is_short:
             tips += [create_tip(falcore.C_EASY_WORD, word)]
+            print("  - add_tip: EASY_WORD")
         elif is_frequent and is_long:
             tips += [create_tip(falcore.C_LONG_WORD, word)]
+            print("  - add_tip: LONG_WORD")
         elif not is_frequent and is_long:
             tips += [create_tip(falcore.C_COMPLEX_WORD, word)]
+            print("  - add_tip: COMPLEX_WORD")
 
         if is_multisemic(word_db):
             tips += [create_tip(falcore.C_MULTISEMIC_WORD, word)]
@@ -93,6 +96,8 @@ def rule_word_complexity(word):
         # avoid abréviations
         if '\'' not in word_text:
             tips += [create_tip(falcore.C_NOT_IN_DICTIONARY, word)]
+            print("  - add_tip: NOT_IN_DICTIONARY")
+
 
     return tips
 
