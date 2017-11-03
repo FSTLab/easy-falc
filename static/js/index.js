@@ -34,10 +34,21 @@ var lastXhrRequest = null;
 | ************** UTILS ************** |
 \*************************************/
 
+/**
+ * Util to easily get a tip polarity.
+ *
+ * TODO Maybe with a better implementation it wouldn't need This
+ * complexity. But it might need redundancy.
+ */
 function getTipPolarity(tip){
   return CATEGORIES[tip.category_id].polarity;
 }
 
+/**
+ * Utils to get text from a polarity integer.
+ *
+ * TODO l2c
+ */
 function getPolarityText(polarity){
   switch(polarity){
     case Categories.BAD:
@@ -67,6 +78,17 @@ function isEmpty(obj) {
   return Object.keys(obj).length === 0;
 }
 
+/**
+ * Save the current caret position in the specified context.
+ *
+ * This returns an integer that is intended to use with
+ * the restoreCaretPosition(context, caretPos) method as caretPos.
+ * Source: https://stackoverflow.com/a/38479462
+ *
+ * @param context Html element selector. You can use #id or .class
+ *                                       for example. Using JQuery
+ *
+ */
 function saveCaretPosition(context){
     var selection = window.getSelection();
     var range = selection.getRangeAt(0);
@@ -74,6 +96,14 @@ function saveCaretPosition(context){
     return range.toString().length;
 }
 
+/**
+ * Restore the specified caret position in the specified context.
+ *
+ * Source: https://stackoverflow.com/a/38479462
+ *
+ * @param context String describing Jquery-style tml element selector
+ * @param caretPos Integer Position of caret. MUST be returned from saveCaretPosition()
+ */
 function restoreCaretPosition(context, caretPos)
 {
     var pos = getTextNodeAtPosition($(context)[0], caretPos);
@@ -83,9 +113,13 @@ function restoreCaretPosition(context, caretPos)
     window.getSelection().addRange(range);
 }
 
+/**
+ * Actually get the next node at the specified position.
+ *
+ * Source: https://stackoverflow.com/a/38479462
+ */
 function getTextNodeAtPosition(root, index){
     var lastNode = null;
-
     var treeWalker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT,function next(elem) {
         if(index > elem.textContent.length){
             index -= elem.textContent.length;
@@ -95,7 +129,6 @@ function getTextNodeAtPosition(root, index){
         return NodeFilter.FILTER_ACCEPT;
     });
     var c = treeWalker.nextNode();
-    console.log("position: " + index);
     return {
         node: c? c: root,
         position: c? index:  0
@@ -106,6 +139,13 @@ function getTextNodeAtPosition(root, index){
 | ************** ASYNC ************** |
 \*************************************/
 
+/**
+ * Asynchronously calls /translate which will returns the processed text.
+ *
+ * On success: it will call the update() method.
+ *
+ * @param textarea Jquery-style selector Source of the text
+ */
 function asyncTranslate(textarea){
   var text = $(textarea).text();
   lastXhrRequest = $.ajax({
@@ -135,7 +175,7 @@ $('#button-summarize').click(function() {
 });
 
 /**
- * throws the update to the laoyut
+ * Main update function after the new text has been received
  */
 function update(textarea, text, tips){
   $(ALL_TAS).removeClass('active');
