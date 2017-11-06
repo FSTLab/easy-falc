@@ -1,34 +1,96 @@
 @import 'variables';
 
-.accordion.bad .accordion-title{
-  background-color: $tips-bad;
+.badge{
+  border-radius: 0;
+  margin-right: .4em;
+
+  div[class^='tips-container-bad'] &{
+    background: $tips-bad;
+  }
+
+    div[class^='tips-container-advice'] &{
+    background: $tips-advice;
+  }
+
+    div[class^='tips-container-good'] &{
+    background: $tips-good;
+  }
 }
 
-.accordion.advice .accordion-title{
-  background-color: $tips-advice;
+#tips-parent{
+  margin: 15px;
 }
 
-.accordion.good .accordion-title{
-  background-color: $tips-good;
+.tips-title{
+  background: white;
+  margin-top: 1em;
+  cursor: pointer;
+
+  span{
+    padding: 1em;
+  }
+
+  span.badge{
+    font-size: 1.3em;
+  }
 }
 
-.score-container{
-	width: 300px;
-	height: 30px;
-	background-color: darkgrey;
-
-	p{
-		position: absolute;
-		color: black;
-		font-size: 1.2em;
-	}
+.accordion-title{
+  padding: 0.75rem 1.2rem;
 }
 
-#score-filler{
-  width: 25%;
-	display: block;
-	height: 100%;
-	background-color: green;
+.accordion-content{
+  padding: 0.1rem 2.2rem;
+  font-weight: 300;
+}
+
+#score-container{
+  display: none;
+	width: auto;
+  margin: 15px;
+  background-color: white;
+
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  -o-box-shadow: 0 0 10px rgba(0,0,0,0.3);
+
+  #scorebar{
+    width: auto;
+    height: 40px;
+    background-color: lightgray;
+
+    #scorebar-filler{
+      width: 25%;
+    	display: block;
+    	height: 100%;
+    	background-color: green;
+    }
+  }
+
+  #score-infos{
+    margin-left: 10px;
+
+    #score-value-big{
+      float: left;
+      display: inline-block;
+
+    	#score-value{
+    		color: #444;
+        font-family: 'Francois One', sans-serif !important;
+        font-size: 6em;
+    	}
+    }
+
+    #score-value-side{
+      padding-top: 25px;
+      padding-bottom: 25px;
+
+      span{
+        display:block;
+      }
+    }
+  }
 }
 
 .area-init, .area-falc{
@@ -46,13 +108,13 @@
 div.active span[id^="tip"].active{
 
   &.good{
-    background-color: $tips-good;
+    background-color: $tips-good-light;
   }
   &.advice{
-    background-color: $tips-advice;
+    background-color: $tips-advice-light;
   }
   &.bad{
-    background-color: $tips-bad;
+    background-color: $tips-bad-light;
   }
 }
 

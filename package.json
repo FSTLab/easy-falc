@@ -1,0 +1,21 @@
+{
+  "name": "easy-falc",
+  "version": "1.0.0",
+  "description": "## Le but",
+  "main": "index.js",
+  "dependencies": {
+    "color": "^2.0.0",
+    "node-sass": "^4.5.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@fst-gallium:FST/easyfalc.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -73,7 +73,7 @@ def process_character(text):
     t = []
     for particle in particles_generator('char'):
         for m in re.compile(particle['regex']).finditer(text):
-            t.append(create_tip(particle['category_id']))
+            t.append(create_tip(particle['category_id'], m))
     return t
 
 

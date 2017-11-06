@@ -7,7 +7,6 @@
  * 2017
  */
 
-
 /*************************************\
 | ************* STATICS ************* |
 \*************************************/
@@ -33,6 +32,41 @@ var lastXhrRequest = null;
 /*************************************\
 | ************** UTILS ************** |
 \*************************************/
+/**
+ * A linear interpolator for hexadecimal colors
+ * @param {String} a
+ * @param {String} b
+ * @param {Number} amount
+ * @example
+ * // returns #7F7F7F
+ * lerpColor('#000000', '#ffffff', 0.5)
+ * @returns {String}
+ */
+function lerpColor(a, b, amount) {
+
+    var ah = parseInt(a.replace(/#/g, ''), 16),
+        ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+        bh = parseInt(b.replace(/#/g, ''), 16),
+        br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+        rr = ar + amount * (br - ar),
+        rg = ag + amount * (bg - ag),
+        rb = ab + amount * (bb - ab);
+
+    return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
+}
+
+function lerpMultipleColor(colors, t){
+  if(t==1){
+    return colors[colors.length - 1];
+  }
+
+  let scaledT = t * (colors.length - 1);
+  let prevC = colors[parseInt(scaledT)];
+  let nextC = colors[parseInt(scaledT + 1)];
+  let newT = scaledT - parseInt(scaledT);
+  return lerpColor(prevC, nextC, newT);
+}
+
 
 /**
  * Util to easily get a tip polarity.
@@ -183,11 +217,18 @@ function update(textarea, text, tips){
 
   TIPS = tips;
 
+  if(tips.length == 0){
+    return;
+  }
+
   var caretPos = saveCaretPosition(textarea);
   $(textarea).html(generateFormattedText(text, tips));
   restoreCaretPosition(textarea, caretPos);
 
-  $('#tips-container').html(generateTips(tips));
+  $('#tips-parent').html(generateTips(tips));
+
+  // Update listener
+  $('.tips-title').click(toggleAccordion);
 
   // update after T was updated
   updateScore(tips);
@@ -213,13 +254,12 @@ function updateScore(tips){
 
 function drawScore(ratio)
 {
-  var p = ratio * 100;
-  var pp = Math.round(p) +'%';
-  var r = ratio > 0.5 ? 510 - (ratio * 2 * 255) : 255;
-  var g = ratio > 0.5 ? 255 : ratio * 2 * 255;
-  var rgb = 'rgb('+ r + ', ' + g + ', 30)';
-  $('#score-percentage').html(pp);
-  $('#score-filler').css({width:pp, backgroundColor: rgb});
+  let colors = ['#f71000', '#f2d42e', '#349b38'];
+  var pp = Math.round(ratio * 100);
+  let rgb = lerpMultipleColor(colors, ratio);
+  $('#score-container').show();
+  $('#score-value').html(pp);
+  $('#scorebar-filler').css({width:pp+'%', backgroundColor: rgb});
 }
 
 /**
@@ -294,12 +334,21 @@ function generateTipsByPolarity(title, cl, tips_by_polarity){
     return '';
   }
 
+  var count = 0;
+  for(var k in tips_by_polarity){
+    count += tips_by_polarity[k].length;
+  }
+
   var html = '';
-  html += '<hr />';
-  html += '<p>' + title + '</p>';
-  html += '<ul class="accordion ' + cl + '" data-accordion data-multi-expand="true" data-allow-all-closed="true">';
+  html += '<div class="tips-container-' + cl + '">';
+  html += '<div class="tips-title">';
+  html += '<span class="badge">' + count + '</span>';
+  html += '<span>' + title + '</span>';
+  html += '</div>';
+  html += '<ul class="accordion ' + cl + '" data-accordion data-multi-expand="true" data-allow-all-closed="true" style="display: none;">';
   html += Object.entries(tips_by_polarity).map(entry => generateTipsByCategory(entry)).join('');
   html += '</ul>';
+  html += '</div>';
 
   return html;
 }
@@ -330,6 +379,10 @@ function highlightTip(event) {
   $("span#" + event.target.id).toggleClass('active');
 }
 
+function toggleAccordion(event){
+  $(this).next('.accordion').toggle();
+}
+
 /*************************************\
 | ********* onDocumentReady ********* |
 \*************************************/
@@ -341,8 +394,8 @@ $(document).ready(function() {
     document.execCommand("insertHTML", false, text);
   });
 
-  $('#tips-container').on('mouseenter mouseleave', 'div[id^=tip-]', highlightTip);
 
+  $('#tips-parent').on('mouseenter mouseleave', 'div[id^=tip-]', highlightTip);
 
   var key_timeout;
   $('div[id^=text-]').on('input focus', function(event) {
