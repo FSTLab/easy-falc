@@ -43,14 +43,15 @@ def init():
     PONDERATION_MIN = float(cursor.fetchone()[0])
     print("### PONDERATION_MIN={}".format(PONDERATION_MIN))
 
-    print(db);
     global RULES
     RULES['word'] = [
         rule_word_complexity
     ]
 
 def process(text):
-    print(db);
+    sql = "SELECT * FROM Mots WHERE fk_dictionnaires=1 AND mot=\"{}\"".format("salut")
+    word_db = cursor.execute(sql).fetchone()
+
     tips = []
     for word in m_regex.get_words(text):
         for rule in RULES['word']:
