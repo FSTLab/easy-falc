@@ -31,6 +31,7 @@ FREQUENT_WORDS_COUNT = 1000
 # Utils
 RULES = {}
 PONDERATION_MIN = 0.0
+print(db);
 
 ##############################
 #       Module Methods       #
@@ -42,12 +43,14 @@ def init():
     PONDERATION_MIN = float(cursor.fetchone()[0])
     print("### PONDERATION_MIN={}".format(PONDERATION_MIN))
 
+    print(db);
     global RULES
     RULES['word'] = [
         rule_word_complexity
     ]
 
 def process(text):
+    print(db);
     tips = []
     for word in m_regex.get_words(text):
         for rule in RULES['word']:
