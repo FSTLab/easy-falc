@@ -49,9 +49,6 @@ def init():
     ]
 
 def process(text):
-    sql = "SELECT * FROM Mots WHERE fk_dictionnaires=1 AND mot=\"{}\"".format("salut")
-    word_db = cursor.execute(sql).fetchone()
-
     tips = []
     for word in m_regex.get_words(text):
         for rule in RULES['word']:
@@ -71,7 +68,8 @@ def rule_word_complexity(word):
     print("- word: {}".format(word_text))
 
     sql = "SELECT * FROM Mots WHERE fk_dictionnaires=1 AND mot=\"{}\"".format(word_text)
-    word_db = cursor.execute(sql).fetchone()
+    cursor.execute(sql)
+    word_db = cursor.fetchone()
     if word_db:
         print("  - db: {}".format(word_db))
         ponderation = float(word_db[3])
