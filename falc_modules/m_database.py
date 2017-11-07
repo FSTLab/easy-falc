@@ -63,6 +63,7 @@ def rule_word_complexity(word):
     In order to be considered easy, a word has to be frequent and short.
     """
     tips = []
+    cursor.execute("SELECT ponderation FROM Mots WHERE fk_dictionnaires=1 ORDER BY ponderation DESC LIMIT 1 OFFSET {}".format(FREQUENT_WORDS_COUNT))
 
     word_text = word.group().lower()
     print("- word: {}".format(word_text))
