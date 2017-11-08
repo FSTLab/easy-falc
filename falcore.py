@@ -48,16 +48,33 @@ class Tip:
         return "%s(%r)" % (self.__class__, self.__dict__)
 
 
+class FalcModule(object):
+    """
+    Abstract class for a Falc Module.
+
+    A Falc Module must implement the process method.
+    """
+
+    def __init__(self):
+        self.name = type(self).__name__
+        print(" - {} initialized".format(self.name))
+
+
+    def process(self, text):
+        print("Module " + self.name + " does not implement process method.")
+
+def create_tip_m(category_id, m, offset=0):
+    start = m.start() + offset
+    snippet = m.group()
+    end = start + len(snippet) - 1
+    return [Tip(category_id, start, end, snippet)]
+
 class Falc:
     DIR_MODULES = 'falc_modules'
 
-    MSG_PROCESS = "## Processing module: {}"
-    MSG_ADD = "### add: {}"
-
     def __init__(self):
-        print("\n# Initialize FALC core")
+        print("\n- FALC Core initialization")
         self.modules = self.init_modules()
-        print("\n")
 
 
     def init_modules(self):
@@ -69,17 +86,13 @@ class Falc:
             if f.startswith('m_') and f.endswith('.py'):
                 path = "%s.%s" % (Falc.DIR_MODULES, os.path.splitext(f)[0])
                 module = import_module(path)
-                m_name = module.__name__
-                print(Falc.MSG_PROCESS.format(m_name))
-                if 'process' in dir(module):
+                for name in dir(module):
                     try:
-                        module.init()
-                    except AttributeError:
+                        module_instance= getattr(module, name)()
+                        if isinstance(module_instance, FalcModule):
+                            modules.append(module_instance)
+                    except TypeError:
                         pass
-                    modules.append(module)
-                    print(Falc.MSG_ADD.format("Success"))
-                else:
-                    print(Falc.MSG_ADD.format("No process() method, not adding"))
         return modules
 
     def process(self, text):

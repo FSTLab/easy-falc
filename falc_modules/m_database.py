@@ -9,114 +9,119 @@ It can
 import sqlite3
 import os
 import falcore
+from falcore import create_tip_m
 import falc_modules.m_regex as m_regex
-from falc_modules.m_regex import create_tip
 
-##############################
-#          Globals           #
-##############################
+class ModuleDatabase(falcore.FalcModule):
+    ##############################
+    #          Statics           #
+    ##############################
+    FREQUENT_WORDS_COUNT = 1000
 
-# Files
-DIR_SCRIPT = os.path.dirname(__file__)
-PATH_REL_DB = 'res/dictionaries.db'
-PATH_ABS_DB = os.path.join(DIR_SCRIPT, PATH_REL_DB)
 
-# Database
-db = sqlite3.connect(PATH_ABS_DB)
-cursor = db.cursor()
+    ##############################
+    #          Module            #
+    ##############################
+    def __init__(self):
+        super().__init__()
 
-# Modifiers
-FREQUENT_WORDS_COUNT = 1000
+        # files and paths
+        self.abspath = os.path.dirname(os.path.abspath(__file__))
+        self.relpathdb = 'res/dictionaries.db'
+        self.pathdb = os.path.join(self.abspath, self.relpathdb)
 
-# Utils
-RULES = {}
-PONDERATION_MIN = 0.0
-print(db);
+        # db
+        self.db = sqlite3.connect(self.pathdb)
 
-##############################
-#       Module Methods       #
-##############################
+        # vars
+        self.ponderation_min = self.get_ponderation_min()
+        self.rules = [
+            self.rule_word_complexity,
+            self.rule_multisemic
+        ]
 
-def init():
-    global PONDERATION_MIN
-    cursor.execute("SELECT ponderation FROM Mots WHERE fk_dictionnaires=1 ORDER BY ponderation DESC LIMIT 1 OFFSET {}".format(FREQUENT_WORDS_COUNT))
-    PONDERATION_MIN = float(cursor.fetchone()[0])
-    print("### PONDERATION_MIN={}".format(PONDERATION_MIN))
+    def process(self, text):
+        tips = []
+        cursor = self.db.cursor()
 
-    global RULES
-    RULES['word'] = [
-        rule_word_complexity
-    ]
+        for word_m in m_regex.get_words_m(text):
+            word = word_m.group().lower()
+            print("- word: {}".format(word))
 
-def process(text):
-    tips = []
-    for word in m_regex.get_words(text):
-        for rule in RULES['word']:
-            tips += rule(word)
-    return tips
+            sql = "SELECT * FROM Mots WHERE fk_dictionnaires=1 AND mot=\"{}\"".format(word)
+            word_db = cursor.execute(sql).fetchone()
 
-##############################
-#           Rules            #
-##############################
-def rule_word_complexity(word):
-    """
-    In order to be considered easy, a word has to be frequent and short.
-    """
-    tips = []
-    cursor.execute("SELECT ponderation FROM Mots WHERE fk_dictionnaires=1 ORDER BY ponderation DESC LIMIT 1 OFFSET {}".format(FREQUENT_WORDS_COUNT))
+            if word_db:
+                for rule in self.rules:
+                    tips += rule(word, word_m, word_db)
+            elif '\'' not in word:
+                tips += create_tip_m(falcore.C_NOT_IN_DICTIONARY, word_m)
+        return tips
 
-    word_text = word.group().lower()
-    print("- word: {}".format(word_text))
+    ##############################
+    #          Rules             #
+    ##############################
+    def rule_word_complexity(self, word, word_m, word_db):
+        """
+        In order to be considered easy, a word has to be frequent and short.
+        """
+        tips = []
 
-    sql = "SELECT * FROM Mots WHERE fk_dictionnaires=1 AND mot=\"{}\"".format(word_text)
-    cursor.execute(sql)
-    word_db = cursor.fetchone()
-    if word_db:
-        print("  - db: {}".format(word_db))
         ponderation = float(word_db[3])
+        is_frequent = ponderation > self.ponderation_min
+        is_short = True if m_regex.is_short(word) else False
+        is_long = True if m_regex.is_long(word) else False
 
-        is_frequent = ponderation > PONDERATION_MIN
-        is_short = True if m_regex.is_short(word_text) else False
-        is_long = True if m_regex.is_long(word_text) else False
-
-        print("  - is_frequent: {}".format(is_frequent))
-        print("  - is_short: {}".format(is_short))
-        print("  - is_long: {}".format(is_long))
-
+        c_id = None
         if is_frequent and is_short:
-            tips += [create_tip(falcore.C_EASY_WORD, word)]
-            print("  - add_tip: EASY_WORD")
+            c_id = falcore.C_EASY_WORD
         elif is_frequent and is_long:
-            tips += [create_tip(falcore.C_LONG_WORD, word)]
-            print("  - add_tip: LONG_WORD")
+            c_id = falcore.C_LONG_WORD
         elif not is_frequent and is_long:
-            tips += [create_tip(falcore.C_COMPLEX_WORD, word)]
-            print("  - add_tip: COMPLEX_WORD")
+            c_Id = falcore.C_COMPLEX_WORD
 
-        if is_multisemic(word_db):
-            tips += [create_tip(falcore.C_MULTISEMIC_WORD, word)]
-    else:
-        # avoid abréviations
-        if '\'' not in word_text:
-            tips += [create_tip(falcore.C_NOT_IN_DICTIONARY, word)]
-            print("  - add_tip: NOT_IN_DICTIONARY")
+        if c_id:
+            tips += create_tip_m(c_id, word_m)
+
+        return tips
+
+    def rule_multisemic(self, word, word_m, word_db):
+        if self.is_multisemic(word_db):
+            return create_tip_m(falcore.C_MULTISEMIC_WORD, word_m)
+        else:
+            return []
 
 
-    return tips
+    ##############################
+    #          Utils             #
+    ##############################
+    def is_multisemic(self, word_db):
+
+        # word has no defintion
+        if word_db[6] is None:
+            return False
+
+        # get definition
+        cursor = self.db.cursor()
+        cursor.execute("SELECT definition FROM Definitions WHERE numero = {}".format(word_db[6]))
+        one = cursor.fetchone()[0]
+
+        # TODO check if definition is multiple or not
+        return False
+
+    ##############################
+    #          Db utils          #
+    ##############################
+    def get_ponderation_min(self):
+        cursor = self.db.cursor()
+        sql = "SELECT ponderation FROM Mots WHERE fk_dictionnaires=1 \
+               ORDER BY ponderation DESC LIMIT 1 OFFSET {}".format(self.FREQUENT_WORDS_COUNT)
+        cursor.execute(sql)
+        return float(cursor.fetchone()[0])
+
+
+
 
 ##############################
 #           Utils            #
 ##############################
-def is_multisemic(word_db):
-
-    # word has no defintion
-    if word_db[6] is None:
-        return False
-
-    # get definition
-    tmp_cursor = db.cursor()
-    tmp_cursor.execute("SELECT definition FROM Definitions WHERE numero = {}".format(word_db[6]))
-    one = tmp_cursor.fetchone()
-
-    # TODO check if definition is multiple or not
-    return False
