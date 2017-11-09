@@ -40,9 +40,9 @@ class ModuleDatabase(falcore.FalcModule):
             self.rule_multisemic
         ]
 
-    def process(self, text):
+    def process(self, text, db):
         tips = []
-        cursor = self.db.cursor()
+        cursor = db.cursor()
 
         for word_m in m_regex.get_words_m(text):
             word = word_m.group().lower()
@@ -50,6 +50,7 @@ class ModuleDatabase(falcore.FalcModule):
 
             sql = "SELECT * FROM Mots WHERE fk_dictionnaires=1 AND mot=\"{}\"".format(word)
             word_db = cursor.execute(sql).fetchone()
+            print(word_db)
 
             if word_db:
                 for rule in self.rules:
@@ -67,7 +68,7 @@ class ModuleDatabase(falcore.FalcModule):
         """
         tips = []
 
-        ponderation = float(word_db[3])
+        ponderation = float(word_db['ponderation'])
         is_frequent = ponderation > self.ponderation_min
         is_short = True if m_regex.is_short(word) else False
         is_long = True if m_regex.is_long(word) else False
@@ -98,13 +99,13 @@ class ModuleDatabase(falcore.FalcModule):
     def is_multisemic(self, word_db):
 
         # word has no defintion
-        if word_db[6] is None:
+        if word_db['fk_definitions'] is None:
             return False
 
         # get definition
-        cursor = self.db.cursor()
-        cursor.execute("SELECT definition FROM Definitions WHERE numero = {}".format(word_db[6]))
-        one = cursor.fetchone()[0]
+        # cursor = self.db.cursor()
+        # cursor.execute("SELECT definition FROM Definitions WHERE numero = {}".format(word_db[6]))
+        # one = cursor.fetchone()[0]
 
         # TODO check if definition is multiple or not
         return False
