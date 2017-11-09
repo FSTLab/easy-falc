@@ -6,11 +6,13 @@ from flask import request
 from flask import render_template
 from flask import jsonify
 from lxml import html
+import os
 
 import falcore
 
 app = Flask(__name__)
-DATABASE = 'falc_modules/res/dictionaries.db'
+DB_REL = 'falc_modules/res/dictionaries.db'
+PATH_DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), DB_REL)
 
 ##############################################
 #                  Database                  #
@@ -34,7 +36,6 @@ def query_db(query, args=(), one=False):
     """Query db."""
     cur = get_db().execute(query, args)
     rv = cur.fetchall()
-    print(rv)
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
@@ -49,22 +50,6 @@ def close_connection(exception):
 
 
 falcore.init_thesaurus()
-#
-# class Mot(db.Model):
-#     numero = db.Column(db.Integer, primary_key=True)
-#     fk_dictionnaires = db.Column(db.Integer, db.ForeignKey('Dictionnaires.numero'))
-#     dictionnaire = db.relationship('Dictionnaire',
-#         backref=db.backref('mots', lazy=True))
-#     mot = db.Column(db.String(50), nullable=False)
-#     ponderation = db.Column(db.Float, nullable=False)
-#
-#     def __repr__(self):
-#         return '<Mot %r>' % self.mot
-#
-# class Dictionnaire(db.Model):
-#     numero = db.Column(db.Integer, primary_key=True)
-#     code = db.Column(db.String(20), nullable=False)
-#     ilbelle = db.Column(db.String(50))
 
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
