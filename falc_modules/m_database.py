@@ -41,6 +41,7 @@ class ModuleDatabase(falcore.FalcModule):
         ]
 
     def process(self, text, db):
+        super().process()
         tips = []
         cursor = db.cursor()
 

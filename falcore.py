@@ -61,7 +61,7 @@ class FalcModule(object):
 
 
     def process(self, text, cur):
-        print("Module " + self.name + " does not implement process method.")
+        print(" - {} processing".format(self.name))
 
 def create_tip_m(category_id, m, offset=0):
     start = m.start() + offset
