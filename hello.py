@@ -21,7 +21,7 @@ def get_db():
     """Get db connection."""
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+        db = g._database = sqlite3.connect(PATH_DB)
 
     def make_dicts(cursor, row):
         return dict((cursor.description[idx][0], value)
