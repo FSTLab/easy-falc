@@ -6,16 +6,39 @@ from flask import request
 from flask import render_template
 from flask import jsonify
 from lxml import html
+import os
 
 import falcore
 
 app = Flask(__name__)
-falcore.init_thesaurus()
+DB_REL = 'falc_modules/res/dictionaries.db'
+PATH_DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), DB_REL)
 
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
+##############################################
+#                  Database                  #
+##############################################
+def get_db():
+    """Get db connection."""
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(PATH_DB)
 
-FALC = falcore.Falc()
+    def make_dicts(cursor, row):
+        return dict((cursor.description[idx][0], value)
+                    for idx, value in enumerate(row))
+
+    db.row_factory = make_dicts
+
+    return db
+
+
+def query_db(query, args=(), one=False):
+    """Query db."""
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
+
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -24,6 +47,14 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+
+
+falcore.init_thesaurus()
+
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+
+falc = falcore.Falc()
 
 ##############################################
 #                Flask views                 #
@@ -44,8 +75,9 @@ def translate():
     """
     This translates.
     """
+
     text = request.form['text']
-    tips = FALC.process(text)
+    tips = falc.process(text, get_db())
     return jsonify(text=text, tips=[t.serialize() for t in tips])
 
 @app.route('/summarize', methods=['POST'])
@@ -55,5 +87,5 @@ def summarize():
     """
     text = request.form['text']
     summary = falcore.summarize(text)
-    tips = FALC.process(summary)
+    tips = falc.process(summary)
     return jsonify(summary=summary, tips=[t.serialize() for t in tips])

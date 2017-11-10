@@ -60,8 +60,8 @@ class FalcModule(object):
         print(" - {} initialized".format(self.name))
 
 
-    def process(self, text):
-        print("Module " + self.name + " does not implement process method.")
+    def process(self, text, cur):
+        print(" - {} processing".format(self.name))
 
 def create_tip_m(category_id, m, offset=0):
     start = m.start() + offset
@@ -95,11 +95,11 @@ class Falc:
                         pass
         return modules
 
-    def process(self, text):
+    def process(self, text, db):
         print("\n### New text received ###")
         tips = []
         for module in self.modules:
-            tips += module.process(text)
+            tips += module.process(text, db)
         return tips
 
 

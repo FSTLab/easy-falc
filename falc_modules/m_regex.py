@@ -56,7 +56,8 @@ class ModuleRegex(falcore.FalcModule):
         ]
 
 
-    def process(self, text):
+    def process(self, text, db):
+        super().process()
         tips = []
         for p in self.processes:
             tips += p(text)
