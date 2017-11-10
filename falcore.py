@@ -60,7 +60,7 @@ class FalcModule(object):
         print(" - {} initialized".format(self.name))
 
 
-    def process(self, text, cur):
+    def process(self, text):
         print(" - {} processing".format(self.name))
 
 def create_tip_m(category_id, m, offset=0):
@@ -75,7 +75,7 @@ class Falc:
     def __init__(self):
         print("\n- FALC Core initialization")
         self.modules = self.init_modules()
-
+        print(len(self.modules))
 
     def init_modules(self):
         modules = []
@@ -90,16 +90,20 @@ class Falc:
                     try:
                         module_instance= getattr(module, name)()
                         if isinstance(module_instance, FalcModule):
+                            print("is_instance")
                             modules.append(module_instance)
-                    except TypeError:
+                    except TypeError as e:
+                        if name.startswith('Module'):
+                            print(e)
                         pass
         return modules
 
-    def process(self, text, db):
+    def process(self, text):
         print("\n### New text received ###")
         tips = []
         for module in self.modules:
-            tips += module.process(text, db)
+            print("yolo")
+            tips += module.process(text)
         return tips
 
 

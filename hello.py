@@ -77,7 +77,7 @@ def translate():
     """
 
     text = request.form['text']
-    tips = falc.process(text, get_db())
+    tips = falc.process(text)
     return jsonify(text=text, tips=[t.serialize() for t in tips])
 
 @app.route('/summarize', methods=['POST'])

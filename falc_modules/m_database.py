@@ -32,6 +32,11 @@ class ModuleDatabase(falcore.FalcModule):
 
         # db
         self.db = sqlite3.connect(self.pathdb)
+        def make_dicts(cursor, row):
+            return dict((cursor.description[idx][0], value)
+                        for idx, value in enumerate(row))
+
+        self.db.row_factory = make_dicts
 
         # vars
         self.ponderation_min = self.get_ponderation_min()
@@ -40,10 +45,11 @@ class ModuleDatabase(falcore.FalcModule):
             self.rule_multisemic
         ]
 
-    def process(self, text, db):
-        super().process()
+    def process(self, text):
+        super().process(text)
+        print("doesn db")
         tips = []
-        cursor = db.cursor()
+        cursor = self.db.cursor()
 
         for word_m in m_regex.get_words_m(text):
             word = word_m.group().lower()
@@ -119,7 +125,7 @@ class ModuleDatabase(falcore.FalcModule):
         sql = "SELECT ponderation FROM Mots WHERE fk_dictionnaires=1 \
                ORDER BY ponderation DESC LIMIT 1 OFFSET {}".format(self.FREQUENT_WORDS_COUNT)
         cursor.execute(sql)
-        return float(cursor.fetchone()[0])
+        return float(cursor.fetchone()['ponderation'])
 
 
 
