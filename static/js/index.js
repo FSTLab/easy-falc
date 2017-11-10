@@ -203,7 +203,7 @@ $('#button-summarize').click(function() {
     },
     type: 'POST',
     success: function(response){
-      update('#text-falc', response.summary, response.tips);
+      update('#text-edit', response.summary, response.tips);
     }
   });
 });
