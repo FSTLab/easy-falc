@@ -13,7 +13,7 @@ Morfessor==2.0.1
 numpy==1.12.1
 packaging==16.8
 polyglot==16.7.4
-psutil==5.2.1
+psutil==5.6.6
 pycld2==0.31
 pycodestyle==2.3.1
 pydocstyle==2.0.0
