@@ -10,7 +10,7 @@ Jinja2==2.9.6
 lxml==3.7.3
 mccabe==0.6.1
 Morfessor==2.0.1
-numpy==1.12.1
+numpy==1.22.0
 packaging==16.8
 polyglot==16.7.4
 psutil==5.2.1
